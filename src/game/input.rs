@@ -1,12 +1,12 @@
+use crate::snake::{Direction, Snake};
 use crossterm::{
     cursor,
-    event::{KeyCode, KeyEvent, KeyModifiers, poll, read, DisableMouseCapture, EnableMouseCapture},
+    event::{poll, read, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEvent, KeyModifiers},
     execute,
     terminal::{self, ClearType},
     ExecutableCommand, QueueableCommand,
 };
 use std::time::Duration;
-use crate::snake::{Snake, Direction};
 
 pub fn handle_input(snake: &mut Snake) {
     if poll(Duration::from_millis(100)).expect("Failed to poll for input") {

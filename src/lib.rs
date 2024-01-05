@@ -1,30 +1,29 @@
-use crate::snake::{Element, Snake, Direction};
-use crate::game::{output::draw, input::handle_input};
-use std::error::Error;
-use std::{thread, process};
-use std::time::Duration;
+use crate::game::{input::handle_input, output::draw};
+use crate::snake::{Direction, Element, Snake};
 use crossterm::{
-    ExecutableCommand, QueueableCommand,
-    terminal, cursor, style::{self, Stylize}
+    cursor,
+    style::{self, Stylize},
+    terminal, ExecutableCommand, QueueableCommand,
 };
+use std::error::Error;
+use std::time::Duration;
+use std::{process, thread};
 
-pub mod snake;
 pub mod game;
+pub mod snake;
 
-pub fn setup () -> Snake {
-        
+pub fn setup() -> Snake {
     let x = 4;
     let y = 5;
 
     let start = Element::new(x, y);
-    
+
     let snake: Snake = Snake::new(start, Direction::RIGHT);
 
     snake
 }
 
-pub fn run (snake: &mut Snake) -> Result<(), Box<dyn Error>> {
-
+pub fn run(snake: &mut Snake) -> Result<(), Box<dyn Error>> {
     let duration = Duration::from_millis(100);
 
     println!("{:?}", snake);
@@ -43,5 +42,5 @@ pub fn run (snake: &mut Snake) -> Result<(), Box<dyn Error>> {
         draw(&snake)?;
     }
 
-    Ok(())    
+    Ok(())
 }
