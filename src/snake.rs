@@ -1,5 +1,7 @@
 use std::{collections::VecDeque, fmt::Error};
 
+use crate::game::Level;
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum Direction {
     UP,
@@ -15,7 +17,7 @@ pub struct Snake {
     pub direction: Direction,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Element {
     pub x: u16,
     pub y: u16,
@@ -35,14 +37,17 @@ impl Snake {
             direction,
         };
 
+        let length: u16 = 5;
+
         instance.body.push_front(start);
-        instance.eat();
-        instance.eat();
+        for _ in 0..length {
+            instance.eat();
+        }
 
         instance
     }
 
-    fn eat(&mut self) -> Result<(), &'static str> {
+    pub fn eat(&mut self) -> Result<(), &'static str> {
         let _old_head = self.head.clone();
 
         let new_head = match self.direction {
@@ -71,10 +76,34 @@ impl Snake {
     }
 
     //TODO: shoot to make a hole
-    fn shoot() {}
+    fn shoot() {
+        todo!();
+    }
 
     //TODO: split your head
-    fn split_personalities() {}
+    fn split_personalities() {
+        todo!();
+    }
+
+    pub fn check_collision(&self) -> bool {
+        let head = self.body.front().expect("Snake has no body!");
+        let mut iter = self.body.iter();
+        iter.next(); // Skip head
+
+        iter.any(|&pos| pos == *head)
+    }
+
+    pub fn check_collision_level(&self, level: &Level) -> bool {
+        let head = self.body.front().expect("Snake has no body!");
+        let mut iter = level.walls.iter();
+        iter.next(); // Skip head
+
+        iter.any(|&pos| pos == *head)
+    }
+
+    pub fn food_found(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

@@ -21,26 +21,31 @@ impl Game {
 }
 
 pub struct Level {
-    walls: Vec<Element>,
+    pub walls: Vec<Element>,
 }
 
 impl Level {
     pub fn new(width: u16, height: u16) -> Level {
-        let mut walls = vec!();
+        let mut walls = vec![];
         for x in 0..width {
             walls.push(Element::new(x, 0));
             walls.push(Element::new(x, height));
-        };
+        }
         for y in 0..height {
             walls.push(Element::new(0, y));
             walls.push(Element::new(width, y));
-        };
-
-        println!("{:?}", walls);
-
-        Level {
-            walls,
         }
-        
+
+        Level { walls }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new() {
+        assert_eq!(Level::new(3, 5).walls.len(), 16);
     }
 }

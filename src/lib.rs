@@ -1,22 +1,15 @@
 use crate::game::output::draw_level;
 use crate::game::{input::handle_input, output::draw};
 use crate::snake::{Direction, Element, Snake};
-use crossterm::{
-    cursor,
-    style::{self, Stylize},
-    terminal, ExecutableCommand, QueueableCommand,
-};
 use game::Level;
 use std::error::Error;
-use std::process::Output;
+use std::thread;
 use std::time::Duration;
-use std::{process, thread};
 
 pub mod game;
 pub mod snake;
 
 pub fn setup() -> Snake {
-
     let x = 4;
     let y = 5;
 
@@ -37,14 +30,23 @@ pub fn run(snake: &mut Snake, level: &Level) -> Result<(), Box<dyn Error>> {
     println!("{:?}", snake);
 
     draw(&snake)?;
-    
+
     loop {
         handle_input(snake);
 
         thread::sleep(duration);
         snake.move_forward()?;
+
+        if snake.food_found() {
+            snake.eat();
+        }
+
         draw_level(&level)?;
         draw(&snake)?;
+
+        if snake.check_collision() || snake.check_collision_level(&level) {
+            break;
+        }
     }
 
     Ok(())
