@@ -48,7 +48,7 @@ impl Snake {
         let new_head = match self.direction {
             Direction::UP => Element::new(self.head.x, self.head.y - 1),
             Direction::DOWN => Element::new(self.head.x, self.head.y + 1),
-            Direction::LEFT => Element::new(self.head.x - 1, self.head.y),
+            Direction::LEFT => Element::new(self.head.x.checked_sub(1).expect("ouch"), self.head.y),
             Direction::RIGHT => Element::new(self.head.x + 1, self.head.y),
         };
 

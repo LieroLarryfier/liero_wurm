@@ -6,10 +6,12 @@ use crossterm::{
 };
 use std::io::{self, Write};
 
+use super::Level;
+
 pub fn draw(snake: &Snake) -> io::Result<()> {
     let mut stdout = io::stdout();
 
-    stdout.execute(terminal::Clear(terminal::ClearType::All))?;
+    //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
     stdout.execute(cursor::Hide)?;
 
     // Draw snake
@@ -17,6 +19,23 @@ pub fn draw(snake: &Snake) -> io::Result<()> {
         stdout
             .queue(cursor::MoveTo(pos.x, pos.y))?
             .queue(style::PrintStyledContent("■".magenta()))?;
+    }
+
+    stdout.flush()?;
+    Ok(())
+}
+
+pub fn draw_level(level: &Level) -> io::Result<()> {
+    let mut stdout = io::stdout();
+
+    stdout.execute(terminal::Clear(terminal::ClearType::All))?;
+    stdout.execute(cursor::Hide)?;
+
+    // Draw level
+    for pos in &level.walls {
+        stdout
+            .queue(cursor::MoveTo(pos.x, pos.y))?
+            .queue(style::PrintStyledContent("■".green()))?;
     }
 
     stdout.flush()?;
