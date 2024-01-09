@@ -1,4 +1,4 @@
-use crate::game::output::draw_level;
+use crate::game::output::{draw_level, draw_food};
 use crate::game::{input::handle_input, output::draw};
 use crate::snake::{Direction, Element, Snake};
 use game::Level;
@@ -20,7 +20,7 @@ pub fn setup() -> Snake {
     snake
 }
 
-pub fn run(snake: &mut Snake, level: &Level) -> Result<(), Box<dyn Error>> {
+pub fn run(snake: &mut Snake, level: &mut Level) -> Result<(), Box<dyn Error>> {
     let duration = Duration::from_millis(100);
 
     println!("{:?}", snake);
@@ -37,11 +37,13 @@ pub fn run(snake: &mut Snake, level: &Level) -> Result<(), Box<dyn Error>> {
         thread::sleep(duration);
         snake.move_forward()?;
 
-        if snake.food_found() {
-            snake.eat();
+        if snake.food_found(level.food) {
+            snake.eat()?;
+            level.food = level.spawn_food();
         }
 
         draw_level(&level)?;
+        draw_food(level.food)?;
         draw(&snake)?;
 
         if snake.check_collision() || snake.check_collision_level(&level) {

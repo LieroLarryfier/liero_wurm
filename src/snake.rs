@@ -94,15 +94,20 @@ impl Snake {
     }
 
     pub fn check_collision_level(&self, level: &Level) -> bool {
-        let head = self.body.front().expect("Snake has no body!");
+        let head = self.head;
         let mut iter = level.walls.iter();
         iter.next(); // Skip head
 
-        iter.any(|&pos| pos == *head)
+        iter.any(|&pos| pos == head)
     }
 
-    pub fn food_found(&self) -> bool {
-        true
+    pub fn food_found(&self, food: Element) -> bool {
+        if self.head == food {
+            true
+        } else {
+            false
+        }
+        
     }
 }
 

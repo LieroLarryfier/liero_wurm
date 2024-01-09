@@ -16,12 +16,14 @@ impl Game {
             width,
             height,
             score: 0,
+            
         }
     }
 }
 
 pub struct Level {
     pub walls: Vec<Element>,
+    pub food: Element,
 }
 
 impl Level {
@@ -36,7 +38,18 @@ impl Level {
             walls.push(Element::new(width, y));
         }
 
-        Level { walls }
+        let food: Element = Element::new(10, 10);
+
+        Level { walls, food }
+    }
+
+    pub fn spawn_food(&mut self) -> Element {
+        use rand::Rng;
+        let mut rng = rand::thread_rng();
+
+        let new_food = Element::new(rng.gen_range(1..24), rng.gen_range(1..24));
+
+        new_food        
     }
 }
 

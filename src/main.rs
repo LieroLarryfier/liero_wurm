@@ -5,10 +5,10 @@ use std::process;
 use liero_wurm;
 
 fn main() {
-    let level: Level = Level::new(25, 25);
+    let mut level: Level = Level::new(25, 25);
     let mut snake: Snake = liero_wurm::setup();
 
-    if let Err(e) = liero_wurm::run(&mut snake, &level) {
+    if let Err(e) = liero_wurm::run(&mut snake, &mut level) {
         println!("Application Error: {e}");
         process::exit(1);
     }

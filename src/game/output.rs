@@ -1,4 +1,4 @@
-use crate::snake::Snake;
+use crate::snake::{Snake, Element};
 use crossterm::{
     cursor,
     style::{self, Stylize},
@@ -40,4 +40,20 @@ pub fn draw_level(level: &Level) -> io::Result<()> {
 
     stdout.flush()?;
     Ok(())
+}
+
+pub fn draw_food(food: Element) -> io::Result<()> {
+    let mut stdout = io::stdout();
+
+    //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
+    //stdout.execute(cursor::Hide)?;
+
+    // Draw food
+    
+    stdout
+        .queue(cursor::MoveTo(food.x, food.y))?
+        .queue(style::PrintStyledContent("■".yellow()))?;
+
+    stdout.flush()?;
+    Ok(())    
 }
