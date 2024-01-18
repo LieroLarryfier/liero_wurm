@@ -12,7 +12,7 @@ pub enum Direction {
 
 #[derive(Debug)]
 pub struct Snake {
-    head: Element,
+    pub head: Element,
     pub body: VecDeque<Element>,
     pub direction: Direction,
 }
@@ -37,17 +37,17 @@ impl Snake {
             direction,
         };
 
-        let length: u16 = 5;
+        let length: u16 = 3;
 
         instance.body.push_front(start);
-        for _ in 0..length {
+        for _ in 1..length {
             instance.eat();
         }
 
         instance
     }
 
-    pub fn eat(&mut self) -> Result<(), &'static str> {
+    pub fn eat(&mut self) -> Result<(), Error> {
         let _old_head = self.head.clone();
 
         let new_head = match self.direction {
@@ -64,7 +64,7 @@ impl Snake {
     }
 
     pub fn move_forward(&mut self) -> Result<(), Error> {
-        self.eat();
+        self.eat()?;
         self.body.pop_back();
 
         Ok(())
@@ -166,5 +166,21 @@ mod tests {
 
         assert_eq!(snake.body.front().unwrap().x, 12);
         assert_eq!(snake.body.front().unwrap().y, 10);
+    }
+
+    #[test]
+    //Test a sharp turn.
+    fn test_turn() {
+        let mut snake = Snake::new(Element::new(0,0), Direction::RIGHT);
+
+        
+        assert_eq!(snake.head.x, 2);
+        assert_eq!(snake.head.y, 0);
+        snake.direction = Direction::DOWN;
+        snake.move_forward();
+        snake.direction = Direction::LEFT;
+        snake.move_forward();
+        assert_eq!(snake.head.x, 1);
+        assert_eq!(snake.head.y, 1);
     }
 }

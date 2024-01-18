@@ -1,6 +1,6 @@
 use crate::snake::Element;
 
-mod game_loop;
+pub mod game_loop;
 pub mod input;
 pub mod output;
 
