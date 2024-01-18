@@ -1,4 +1,4 @@
-use crate::snake::{Snake, Element};
+use crate::snake::{Element, Snake};
 use crossterm::{
     cursor,
     style::{self, Stylize},
@@ -49,11 +49,11 @@ pub fn draw_food(food: Element) -> io::Result<()> {
     //stdout.execute(cursor::Hide)?;
 
     // Draw food
-    
+
     stdout
         .queue(cursor::MoveTo(food.x, food.y))?
         .queue(style::PrintStyledContent("■".yellow()))?;
 
     stdout.flush()?;
-    Ok(())    
+    Ok(())
 }

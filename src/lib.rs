@@ -1,11 +1,9 @@
-use crate::game::output::{draw_level, draw_food};
-use crate::game::{input::handle_input, output::draw};
+use crate::game::output::draw;
 use crate::snake::{Direction, Element, Snake};
+use game::game_loop;
 use game::Level;
 use std::error::Error;
-use std::thread;
 use std::time::Duration;
-use game::game_loop;
 
 pub mod game;
 pub mod snake;
@@ -26,15 +24,9 @@ pub fn run(snake: &mut Snake, level: &mut Level) -> Result<(), Box<dyn Error>> {
 
     println!("{:?}", snake);
 
-    snake.move_forward();
-
-    println!("{:?}", snake);
-
     draw(&snake)?;
 
     loop {
         game_loop::game_loop(snake, level, duration)?;
     }
-
-    Ok(())
 }

@@ -16,7 +16,6 @@ impl Game {
             width,
             height,
             score: 0,
-            
         }
     }
 }
@@ -38,7 +37,7 @@ impl Level {
             walls.push(Element::new(width, y));
         }
 
-        let food: Element = Element::new(10, 10);
+        let food: Element = Element::new(width / 2, height / 2);
 
         Level { walls, food }
     }
@@ -49,7 +48,7 @@ impl Level {
 
         let new_food = Element::new(rng.gen_range(1..24), rng.gen_range(1..24));
 
-        new_food        
+        new_food
     }
 }
 

@@ -107,7 +107,6 @@ impl Snake {
         } else {
             false
         }
-        
     }
 }
 
@@ -171,9 +170,8 @@ mod tests {
     #[test]
     //Test a sharp turn.
     fn test_turn() {
-        let mut snake = Snake::new(Element::new(0,0), Direction::RIGHT);
+        let mut snake = Snake::new(Element::new(0, 0), Direction::RIGHT);
 
-        
         assert_eq!(snake.head.x, 2);
         assert_eq!(snake.head.y, 0);
         snake.direction = Direction::DOWN;

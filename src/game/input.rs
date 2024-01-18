@@ -1,11 +1,5 @@
 use crate::snake::{Direction, Snake};
-use crossterm::{
-    cursor,
-    event::{poll, read, DisableMouseCapture, EnableMouseCapture, KeyCode, KeyEvent, KeyModifiers, Event},
-    execute,
-    terminal::{self, ClearType},
-    ExecutableCommand, QueueableCommand,
-};
+use crossterm::event::{Event, KeyCode, KeyEvent};
 use std::time::Duration;
 
 pub trait Input {
@@ -21,7 +15,7 @@ impl Input for RealInput {
 }
 
 pub fn handle_input<T: Input>(snake: &mut Snake, input: T) {
-    if poll(Duration::from_millis(100)).expect("Failed to poll for input") {
+    if crossterm::event::poll(Duration::from_millis(100)).expect("Failed to poll for input") {
         if let crossterm::event::Event::Key(KeyEvent {
             code,
             modifiers,
@@ -62,9 +56,8 @@ pub fn handle_input<T: Input>(snake: &mut Snake, input: T) {
 #[cfg(test)]
 
 mod tests {
-    use std::{io::Cursor, thread};
-
     use crate::snake::Element;
+    use crossterm::event::KeyModifiers;
 
     use super::*;
 
@@ -80,31 +73,22 @@ mod tests {
 
     #[test]
     fn test_input_right() {
-
         let custom_input = KeyEvent::new(KeyCode::Down, KeyModifiers::empty());
-            
+
         let mock_input = MockInput {
-            event: crossterm::event::Event::Key(custom_input)
+            event: crossterm::event::Event::Key(custom_input),
         };
 
-        let snake = &mut Snake::new(Element::new(0,0), Direction::RIGHT);
-
-        let keyevent = crossterm::event::Event::Key(custom_input);
-
-        let input = Cursor::new(custom_input);
+        let snake = &mut Snake::new(Element::new(0, 0), Direction::RIGHT);
 
         handle_input(snake, mock_input);
-
-        let keyevent = crossterm::event::Event::Key(custom_input);
-
-        let input = Cursor::new(custom_input);
 
         assert_eq!(snake.direction, Direction::DOWN);
 
         let custom_input = KeyEvent::new(KeyCode::Down, KeyModifiers::empty());
-            
+
         let mock_input = MockInput {
-            event: crossterm::event::Event::Key(custom_input)
+            event: crossterm::event::Event::Key(custom_input),
         };
 
         handle_input(snake, mock_input);
@@ -112,9 +96,9 @@ mod tests {
         assert_eq!(snake.direction, Direction::DOWN);
 
         let custom_input = KeyEvent::new(KeyCode::Right, KeyModifiers::empty());
-            
+
         let mock_input = MockInput {
-            event: crossterm::event::Event::Key(custom_input)
+            event: crossterm::event::Event::Key(custom_input),
         };
 
         handle_input(snake, mock_input);

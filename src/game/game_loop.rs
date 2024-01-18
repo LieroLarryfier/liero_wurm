@@ -1,15 +1,18 @@
-use std::{time::Duration, thread, error::Error};
+use std::{error::Error, thread, time::Duration};
 
 use crate::snake::Snake;
 
-use crate::game::Level;
 use super::input;
 use super::input::RealInput;
 use super::output;
+use crate::game::Level;
 
-pub fn game_loop(snake: &mut Snake, level: &mut Level, duration: Duration) -> Result<(), Box<dyn Error>> {
-    
-    let input = RealInput{};
+pub fn game_loop(
+    snake: &mut Snake,
+    level: &mut Level,
+    duration: Duration,
+) -> Result<(), Box<dyn Error>> {
+    let input = RealInput {};
 
     input::handle_input(snake, input);
 
@@ -35,14 +38,14 @@ pub fn game_loop(snake: &mut Snake, level: &mut Level, duration: Duration) -> Re
 #[cfg(test)]
 
 mod tests {
-    use crate::snake::{Element, Direction};
+    use crate::snake::{Direction, Element};
 
     use super::*;
 
     #[test]
     fn test_game_loop_eat() {
-        let snake = &mut Snake::new(Element::new(1,1), Direction::RIGHT);
-        let level = &mut Level::new(20,20);
+        let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
+        let level = &mut Level::new(20, 20);
         let duration = Duration::from_millis(50);
 
         assert_eq!(snake.head.x, 3);
@@ -53,7 +56,7 @@ mod tests {
         assert_eq!(snake.head.x, 4);
         assert_eq!(snake.head.y, 1);
 
-        level.food = Element::new(5,1);
+        level.food = Element::new(5, 1);
 
         game_loop(snake, level, duration);
 
@@ -63,8 +66,8 @@ mod tests {
 
     #[test]
     fn test_game_loop_turn() {
-        let snake = &mut Snake::new(Element::new(1,1), Direction::RIGHT);
-        let level = &mut Level::new(20,20);
+        let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
+        let level = &mut Level::new(20, 20);
         let duration = Duration::from_millis(50);
 
         assert_eq!(snake.head.x, 3);
@@ -94,6 +97,5 @@ mod tests {
 
         assert_eq!(snake.head.x, 4);
         assert_eq!(snake.head.y, 2);
-
     }
 }
