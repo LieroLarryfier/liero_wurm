@@ -14,7 +14,7 @@ impl Input for RealInput {
     }
 }
 
-pub fn handle_input<T: Input>(snake: &mut Snake, input: T) {
+pub fn handle_input<T: Input>(snake: &mut Snake, input: &T) {
     if crossterm::event::poll(Duration::from_millis(100)).expect("Failed to poll for input") {
         if let crossterm::event::Event::Key(KeyEvent {
             code,
@@ -69,40 +69,33 @@ mod tests {
         fn read_input(&self) -> Event {
             self.event.clone()
         }
+
+        
+    }
+
+    impl MockInput {
+        fn set_custom_keycode(&mut self, custom_keycode: KeyCode) -> () {
+            let custom_input = KeyEvent::new(custom_keycode, KeyModifiers::empty());
+            self.event = crossterm::event::Event::Key(custom_input);
+        }
     }
 
     #[test]
-    fn test_input_right() {
-        let custom_input = KeyEvent::new(KeyCode::Down, KeyModifiers::empty());
+    fn test_input() {
 
-        let mock_input = MockInput {
-            event: crossterm::event::Event::Key(custom_input),
-        };
+        let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
+        let mut mock_input = MockInput {event: crossterm::event::Event::Key(KeyEvent::new(KeyCode::Right, KeyModifiers::empty()))};
 
-        let snake = &mut Snake::new(Element::new(0, 0), Direction::RIGHT);
-
-        handle_input(snake, mock_input);
-
+        mock_input.set_custom_keycode(KeyCode::Down);
+        handle_input(snake, &mock_input);
         assert_eq!(snake.direction, Direction::DOWN);
+        
+        mock_input.set_custom_keycode(KeyCode::Left);
+        handle_input(snake, &mock_input);
+        assert_eq!(snake.direction, Direction::LEFT);
 
-        let custom_input = KeyEvent::new(KeyCode::Down, KeyModifiers::empty());
-
-        let mock_input = MockInput {
-            event: crossterm::event::Event::Key(custom_input),
-        };
-
-        handle_input(snake, mock_input);
-
+        mock_input.set_custom_keycode(KeyCode::Down);
+        handle_input(snake, &mock_input);
         assert_eq!(snake.direction, Direction::DOWN);
-
-        let custom_input = KeyEvent::new(KeyCode::Right, KeyModifiers::empty());
-
-        let mock_input = MockInput {
-            event: crossterm::event::Event::Key(custom_input),
-        };
-
-        handle_input(snake, mock_input);
-
-        assert_eq!(snake.direction, Direction::RIGHT);
     }
 }

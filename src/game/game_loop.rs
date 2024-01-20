@@ -14,7 +14,7 @@ pub fn game_loop(
 ) -> Result<(), Box<dyn Error>> {
     let input = RealInput {};
 
-    input::handle_input(snake, input);
+    input::handle_input(snake, &input);
 
     thread::sleep(duration);
     snake.move_forward()?;
