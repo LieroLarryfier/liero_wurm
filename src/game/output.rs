@@ -12,6 +12,7 @@ pub fn draw(snake: &Snake) -> io::Result<()> {
     let mut stdout = io::stdout();
 
     //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
+    terminal::enable_raw_mode()?;
     stdout.execute(cursor::Hide)?;
 
     // Draw snake

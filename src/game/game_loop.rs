@@ -1,3 +1,4 @@
+use std::time::Instant;
 use std::{error::Error, thread, time::Duration};
 
 use crate::snake::Snake;
@@ -14,22 +15,27 @@ pub fn game_loop(
 ) -> Result<(), Box<dyn Error>> {
     let input = RealInput {};
 
+    let mut last_frame_time = Instant::now();
+
     input::handle_input(snake, &input);
 
-    thread::sleep(duration);
-    snake.move_forward()?;
+    let elapsed_time = last_frame_time.elapsed();
+    if elapsed_time >= Duration::from_millis(100) {
 
-    if snake.food_found(level.food) {
-        snake.eat()?;
-        level.food = level.spawn_food();
+        snake.move_forward()?;
+
+        if snake.food_found(level.food) {
+            snake.eat()?;
+            level.food = level.spawn_food();
+        }
+        last_frame_time = Instant::now();
     }
-
     output::draw_level(&level)?;
     output::draw_food(level.food)?;
     output::draw(&snake)?;
 
     if snake.check_collision() || snake.check_collision_level(&level) {
-        panic!("ouch")
+        panic!("ouch2")
     }
 
     Ok(())

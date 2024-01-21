@@ -1,5 +1,6 @@
 use crate::snake::{Direction, Snake};
-use crossterm::event::{Event, KeyCode, KeyEvent};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
+
 use std::time::Duration;
 
 pub trait Input {
@@ -14,7 +15,7 @@ impl Input for RealInput {
     }
 }
 
-pub fn handle_input<T: Input>(snake: &mut Snake, input: &T) {
+pub fn handle_input<T: Input>(snake: &mut Snake, input: &T) -> Option<Direction> {
     if crossterm::event::poll(Duration::from_millis(100)).expect("Failed to poll for input") {
         if let crossterm::event::Event::Key(KeyEvent {
             code,
@@ -23,33 +24,55 @@ pub fn handle_input<T: Input>(snake: &mut Snake, input: &T) {
             kind,
         }) = input.read_input()
         {
-            match code {
-                KeyCode::Esc => {
-                    std::process::exit(0);
-                }
-                KeyCode::Up => {
-                    if snake.direction != Direction::DOWN {
-                        snake.direction = Direction::UP;
+            if kind == KeyEventKind::Press {
+                match code {
+                    KeyCode::Esc => {
+                        std::process::exit(0);
+                    }
+                    KeyCode::Up => {
+                        if snake.direction != Direction::DOWN {
+                            snake.direction = Direction::UP;
+                            Some(Direction::UP)
+                        } else {
+                            None
+                        }
+                    }
+                    KeyCode::Down => {
+                        if snake.direction != Direction::UP {
+                            snake.direction = Direction::DOWN;
+                            Some(Direction::DOWN)
+                        } else {
+                            None
+                        }
+                    }
+                    KeyCode::Left => {
+                        if snake.direction != Direction::RIGHT {
+                            snake.direction = Direction::LEFT;
+                            Some(Direction::LEFT)
+                        } else {
+                            None
+                        }
+                    }
+                    KeyCode::Right => {
+                        if snake.direction != Direction::LEFT {
+                            snake.direction = Direction::RIGHT;
+                            Some(Direction::RIGHT)
+                        } else {
+                            None
+                        }
+                    }
+                    _ => {
+                        None
                     }
                 }
-                KeyCode::Down => {
-                    if snake.direction != Direction::UP {
-                        snake.direction = Direction::DOWN;
-                    }
-                }
-                KeyCode::Left => {
-                    if snake.direction != Direction::RIGHT {
-                        snake.direction = Direction::LEFT;
-                    }
-                }
-                KeyCode::Right => {
-                    if snake.direction != Direction::LEFT {
-                        snake.direction = Direction::RIGHT;
-                    }
-                }
-                _ => {}
+            } else {
+                None
             }
+        } else {
+            None
         }
+    } else {
+        None
     }
 }
 
@@ -69,8 +92,6 @@ mod tests {
         fn read_input(&self) -> Event {
             self.event.clone()
         }
-
-        
     }
 
     impl MockInput {
@@ -85,17 +106,29 @@ mod tests {
 
         let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
         let mut mock_input = MockInput {event: crossterm::event::Event::Key(KeyEvent::new(KeyCode::Right, KeyModifiers::empty()))};
+        println!("{:?}", snake.head);
+        assert_eq!(snake.head.x, 3);
+        assert_eq!(snake.head.y, 1);
 
         mock_input.set_custom_keycode(KeyCode::Down);
         handle_input(snake, &mock_input);
         assert_eq!(snake.direction, Direction::DOWN);
         
+        assert_eq!(snake.head.x, 3);
+        assert_eq!(snake.head.y, 2);
+        
         mock_input.set_custom_keycode(KeyCode::Left);
         handle_input(snake, &mock_input);
         assert_eq!(snake.direction, Direction::LEFT);
 
+        assert_eq!(snake.head.x, 4);
+        assert_eq!(snake.head.y, 2);
+
         mock_input.set_custom_keycode(KeyCode::Down);
         handle_input(snake, &mock_input);
         assert_eq!(snake.direction, Direction::DOWN);
+
+        assert_eq!(snake.head.x, 4);
+        assert_eq!(snake.head.y, 3);
     }
 }
