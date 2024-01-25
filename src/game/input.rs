@@ -1,5 +1,5 @@
 use crate::snake::{Direction, Snake};
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyEventState};
 
 use std::time::Duration;
 
@@ -105,30 +105,22 @@ mod tests {
     fn test_input() {
 
         let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
-        let mut mock_input = MockInput {event: crossterm::event::Event::Key(KeyEvent::new(KeyCode::Right, KeyModifiers::empty()))};
+        let mut mock_input = MockInput {event: crossterm::event::Event::Key(KeyEvent::new_with_kind(KeyCode::Right, KeyModifiers::empty(), KeyEventKind::Press))};
         println!("{:?}", snake.head);
         assert_eq!(snake.head.x, 3);
         assert_eq!(snake.head.y, 1);
 
         mock_input.set_custom_keycode(KeyCode::Down);
-        handle_input(snake, &mock_input);
+        assert_eq!(handle_input(snake, &mock_input), Some(Direction::DOWN));
         assert_eq!(snake.direction, Direction::DOWN);
-        
-        assert_eq!(snake.head.x, 3);
-        assert_eq!(snake.head.y, 2);
         
         mock_input.set_custom_keycode(KeyCode::Left);
-        handle_input(snake, &mock_input);
+        assert_eq!(handle_input(snake, &mock_input), Some(Direction::LEFT));
         assert_eq!(snake.direction, Direction::LEFT);
 
-        assert_eq!(snake.head.x, 4);
-        assert_eq!(snake.head.y, 2);
-
         mock_input.set_custom_keycode(KeyCode::Down);
-        handle_input(snake, &mock_input);
+        assert_eq!(handle_input(snake, &mock_input), Some(Direction::DOWN));
         assert_eq!(snake.direction, Direction::DOWN);
 
-        assert_eq!(snake.head.x, 4);
-        assert_eq!(snake.head.y, 3);
     }
 }

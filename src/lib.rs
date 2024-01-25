@@ -20,7 +20,7 @@ pub fn setup() -> Snake {
 }
 
 pub fn run(snake: &mut Snake, level: &mut Level) -> Result<(), Box<dyn Error>> {
-    let duration = Duration::from_millis(500);
+    let duration = Duration::from_millis(100);
 
     println!("{:?}", snake);
 

@@ -50,6 +50,11 @@ impl Level {
 
         new_food
     }
+
+    fn spawn_expanding_food() {
+        //After some time the food expands and kills the snake, so be quick - different color
+        todo!();
+    }
 }
 
 #[cfg(test)]

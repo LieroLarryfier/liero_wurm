@@ -20,7 +20,7 @@ pub fn game_loop(
     input::handle_input(snake, &input);
 
     let elapsed_time = last_frame_time.elapsed();
-    if elapsed_time >= Duration::from_millis(100) {
+    if elapsed_time >= duration {
 
         snake.move_forward()?;
 
@@ -52,7 +52,7 @@ mod tests {
     fn test_game_loop_eat() {
         let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
         let level = &mut Level::new(20, 20);
-        let duration = Duration::from_millis(50);
+        let duration = Duration::from_millis(100);
 
         assert_eq!(snake.head.x, 3);
         assert_eq!(snake.head.y, 1);
@@ -103,5 +103,11 @@ mod tests {
 
         assert_eq!(snake.head.x, 4);
         assert_eq!(snake.head.y, 2);
+    }
+
+    #[test]
+    fn test_game_loop_time() {
+        //introduce mocks for the time 
+        todo!();
     }
 }
