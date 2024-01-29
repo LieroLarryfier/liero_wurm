@@ -113,7 +113,6 @@ mod tests {
         mock_input.set_custom_keycode(KeyCode::Down);
         assert_eq!(handle_input(snake, &mock_input), Some(Direction::DOWN));
         assert_eq!(snake.direction, Direction::DOWN);
-        
         mock_input.set_custom_keycode(KeyCode::Left);
         assert_eq!(handle_input(snake, &mock_input), Some(Direction::LEFT));
         assert_eq!(snake.direction, Direction::LEFT);

@@ -1,3 +1,4 @@
+use crate::game::game_loop::RealTime;
 use crate::game::output::draw;
 use crate::snake::{Direction, Element, Snake};
 use game::game_loop;
@@ -21,12 +22,13 @@ pub fn setup() -> Snake {
 
 pub fn run(snake: &mut Snake, level: &mut Level) -> Result<(), Box<dyn Error>> {
     let duration = Duration::from_millis(100);
+    let time = RealTime {};
 
     println!("{:?}", snake);
 
     draw(&snake)?;
 
     loop {
-        game_loop::game_loop(snake, level, duration)?;
+        game_loop::game_loop(snake, level, duration, &time)?;
     }
 }

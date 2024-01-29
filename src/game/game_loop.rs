@@ -8,18 +8,36 @@ use super::input::RealInput;
 use super::output;
 use crate::game::Level;
 
-pub fn game_loop(
+pub trait TimeTrait {
+    fn get_time(&self) -> Instant;
+    fn get_elapsed_time(&self, instant: Instant) -> Duration;
+} 
+
+pub struct RealTime;
+
+impl TimeTrait for RealTime {
+    fn get_time(&self) -> Instant {
+        Instant::now()
+    }
+
+    fn get_elapsed_time(&self, instant: Instant) -> Duration {
+        instant.elapsed()
+    }
+}
+
+pub fn game_loop<T: TimeTrait>(
     snake: &mut Snake,
     level: &mut Level,
     duration: Duration,
+    time: &T,
 ) -> Result<(), Box<dyn Error>> {
     let input = RealInput {};
 
-    let mut last_frame_time = Instant::now();
+    let mut last_frame_time = time.get_time();
 
     input::handle_input(snake, &input);
 
-    let elapsed_time = last_frame_time.elapsed();
+    let elapsed_time = time.get_elapsed_time(last_frame_time);
     if elapsed_time >= duration {
 
         snake.move_forward()?;
@@ -48,23 +66,36 @@ mod tests {
 
     use super::*;
 
+    struct MockTime;
+
+    impl TimeTrait for MockTime {
+        fn get_time(&self) -> Instant {
+            Instant::now()
+        }
+    
+        fn get_elapsed_time(&self, instant: Instant) -> Duration {
+            Duration::from_millis(100)
+        }
+    }
+
     #[test]
     fn test_game_loop_eat() {
         let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
         let level = &mut Level::new(20, 20);
         let duration = Duration::from_millis(100);
+        let time = MockTime{};
 
         assert_eq!(snake.head.x, 3);
         assert_eq!(snake.head.y, 1);
 
-        game_loop(snake, level, duration);
+        game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.x, 4);
         assert_eq!(snake.head.y, 1);
 
         level.food = Element::new(5, 1);
 
-        game_loop(snake, level, duration);
+        game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.body.len(), 4);
         assert_eq!(snake.head.x, 5);
@@ -74,17 +105,18 @@ mod tests {
     fn test_game_loop_turn() {
         let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
         let level = &mut Level::new(20, 20);
-        let duration = Duration::from_millis(50);
+        let duration = Duration::from_millis(100);
+        let time = MockTime{};
 
         assert_eq!(snake.head.x, 3);
         assert_eq!(snake.head.y, 1);
 
-        game_loop(snake, level, duration);
+        game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.x, 4);
         assert_eq!(snake.head.y, 1);
 
-        game_loop(snake, level, duration);
+        game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.body.len(), 3);
         assert_eq!(snake.head.x, 5);
@@ -92,22 +124,17 @@ mod tests {
 
         snake.direction = Direction::DOWN;
 
-        game_loop(snake, level, duration);
+        game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.x, 5);
         assert_eq!(snake.head.y, 2);
 
         snake.direction = Direction::LEFT;
 
-        game_loop(snake, level, duration);
+        game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.x, 4);
         assert_eq!(snake.head.y, 2);
     }
 
-    #[test]
-    fn test_game_loop_time() {
-        //introduce mocks for the time 
-        todo!();
-    }
 }
