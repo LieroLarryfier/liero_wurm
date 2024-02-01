@@ -1,4 +1,4 @@
-use crate::snake::{Element, Snake};
+use crate::snake::{Element, Snake_old};
 use crossterm::{
     cursor,
     style::{self, Stylize},
@@ -8,7 +8,7 @@ use std::io::{self, Write};
 
 use super::Level;
 
-pub fn draw(snake: &Snake) -> io::Result<()> {
+pub fn draw(snake: &Snake_old) -> io::Result<()> {
     let mut stdout = io::stdout();
 
     //stdout.execute(terminal::Clear(terminal::ClearType::All))?;

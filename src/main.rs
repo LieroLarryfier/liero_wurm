@@ -1,15 +1,12 @@
 use liero_wurm::game::Level;
-use liero_wurm::snake::Snake;
+use liero_wurm::snake::Snake_old;
 use std::process;
 
 use liero_wurm;
 
 fn main() {
     let mut level: Level = Level::new(25, 25);
-    let mut snake: Snake = liero_wurm::setup();
+    let mut snake: Snake_old = liero_wurm::setup_old();
 
-    if let Err(e) = liero_wurm::run(&mut snake, &mut level) {
-        println!("Application Error: {e}");
-        process::exit(1);
-    }
+    liero_wurm::run(&mut snake, &mut level);
 }

@@ -1,8 +1,10 @@
 use std::{collections::VecDeque, fmt::Error};
 
+use bevy::prelude::*;
+
 use crate::game::Level;
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Component)]
 pub enum Direction {
     UP,
     DOWN,
@@ -10,14 +12,35 @@ pub enum Direction {
     RIGHT,
 }
 
-#[derive(Debug)]
-pub struct Snake {
-    pub head: Element,
+#[derive(Debug, Component)]
+pub struct Snake_old {
+    pub head: Head,
     pub body: VecDeque<Element>,
     pub direction: Direction,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq)]
+pub fn add_snake(mut commands: Commands) {
+    commands.spawn((Snake, Head(Element {x: 3, y: 3})));   
+}
+
+pub struct SnakePlugin;
+
+impl Plugin for SnakePlugin {
+    fn build(&self, app: &mut App) {
+        app
+        .insert_resource(SnakeTimer(Timer::from_seconds(2.0, TimerMode::Repeating)))
+        .add_systems(Startup, add_snake)
+        .add_systems(Update, print_snake_debug);
+    }
+}
+
+#[derive(Debug, Component)]
+pub struct Snake;
+
+#[derive(Component, Debug, Copy, Clone, PartialEq)]
+pub struct Head (pub Element);
+
+#[derive(Debug, Copy, Clone, PartialEq, Component)]
 pub struct Element {
     pub x: u16,
     pub y: u16,
@@ -29,10 +52,21 @@ impl Element {
     }
 }
 
-impl Snake {
-    pub fn new(start: Element, direction: Direction) -> Snake {
-        let mut instance = Snake {
-            head: Element::new(start.x, start.y),
+#[derive(Resource)]
+struct SnakeTimer(Timer);
+
+fn print_snake_debug(time: Res<Time>, mut timer: ResMut<SnakeTimer>, query: Query<&Head, With<Snake>>) {
+    if timer.0.tick(time.delta()).just_finished() {
+        for head in &query {
+            println!("head: {:?}", head);
+        }
+    }
+}
+
+impl Snake_old {
+    pub fn new(start: Element, direction: Direction) -> Snake_old {
+        let mut instance = Snake_old {
+            head: Head(Element::new(start.x, start.y)),
             body: VecDeque::new(),
             direction,
         };
@@ -51,14 +85,14 @@ impl Snake {
         let _old_head = self.head.clone();
 
         let new_head = match self.direction {
-            Direction::UP => Element::new(self.head.x, self.head.y - 1),
-            Direction::DOWN => Element::new(self.head.x, self.head.y + 1),
-            Direction::LEFT => Element::new(self.head.x.checked_sub(1).expect("ouch"), self.head.y),
-            Direction::RIGHT => Element::new(self.head.x + 1, self.head.y),
+            Direction::UP => Head(Element::new(self.head.0.x, self.head.0.y - 1)),
+            Direction::DOWN => Head(Element::new(self.head.0.x, self.head.0.y + 1)),
+            Direction::LEFT => Head(Element::new(self.head.0.x.checked_sub(1).expect("ouch"), self.head.0.y)),
+            Direction::RIGHT => Head(Element::new(self.head.0.x + 1, self.head.0.y)),
         };
 
         self.head = new_head;
-        self.body.push_front(new_head);
+        self.body.push_front(new_head.0);
 
         Ok(())
     }
@@ -86,7 +120,7 @@ impl Snake {
     }
 
     pub fn check_collision(&self) -> bool {
-        let head = self.body.front().expect("Snake has no body!");
+        let head = self.body.front().expect("Snake_old has no body!");
         let mut iter = self.body.iter();
         iter.next(); // Skip head
 
@@ -98,11 +132,11 @@ impl Snake {
         let mut iter = level.walls.iter();
         iter.next(); // Skip head
 
-        iter.any(|&pos| pos == head)
+        iter.any(|&pos| pos == head.0)
     }
 
     pub fn food_found(&self, food: Element) -> bool {
-        if self.head == food {
+        if self.head.0 == food {
             true
         } else {
             false
@@ -116,12 +150,12 @@ mod tests {
 
     #[test]
     fn test_new() {
-        assert_eq!(Snake::new(Element::new(3, 3), Direction::UP).body.len(), 3);
+        assert_eq!(Snake_old::new(Element::new(3, 3), Direction::UP).body.len(), 3);
     }
 
     #[test]
     fn test_eat() {
-        let mut snake = Snake::new(Element::new(3, 3), Direction::UP);
+        let mut snake = Snake_old::new(Element::new(3, 3), Direction::UP);
         assert_eq!(snake.body.len(), 3);
         snake.eat();
         assert_eq!(snake.body.len(), 4);
@@ -129,7 +163,7 @@ mod tests {
 
     #[test]
     fn test_move() {
-        let mut snake = Snake::new(Element::new(3, 3), Direction::UP);
+        let mut snake = Snake_old::new(Element::new(3, 3), Direction::UP);
         assert_eq!(snake.body.len(), 3);
         snake.move_forward();
         assert_eq!(snake.body.len(), 3);
@@ -137,7 +171,7 @@ mod tests {
 
     #[test]
     fn test_direction_up() {
-        let snake = Snake::new(Element::new(10, 10), Direction::UP);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::UP);
 
         assert_eq!(snake.body.front().unwrap().x, 10);
         assert_eq!(snake.body.front().unwrap().y, 8);
@@ -145,7 +179,7 @@ mod tests {
 
     #[test]
     fn test_direction_down() {
-        let snake = Snake::new(Element::new(10, 10), Direction::DOWN);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::DOWN);
 
         assert_eq!(snake.body.front().unwrap().x, 10);
         assert_eq!(snake.body.front().unwrap().y, 12);
@@ -153,7 +187,7 @@ mod tests {
 
     #[test]
     fn test_direction_left() {
-        let snake = Snake::new(Element::new(10, 10), Direction::LEFT);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::LEFT);
 
         assert_eq!(snake.body.front().unwrap().x, 8);
         assert_eq!(snake.body.front().unwrap().y, 10);
@@ -161,7 +195,7 @@ mod tests {
 
     #[test]
     fn test_direction_right() {
-        let snake = Snake::new(Element::new(10, 10), Direction::RIGHT);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::RIGHT);
 
         assert_eq!(snake.body.front().unwrap().x, 12);
         assert_eq!(snake.body.front().unwrap().y, 10);
@@ -170,15 +204,15 @@ mod tests {
     #[test]
     //Test a sharp turn.
     fn test_turn() {
-        let mut snake = Snake::new(Element::new(0, 0), Direction::RIGHT);
+        let mut snake = Snake_old::new(Element::new(0, 0), Direction::RIGHT);
 
-        assert_eq!(snake.head.x, 2);
-        assert_eq!(snake.head.y, 0);
+        assert_eq!(snake.head.0.x, 2);
+        assert_eq!(snake.head.0.y, 0);
         snake.direction = Direction::DOWN;
         snake.move_forward();
         snake.direction = Direction::LEFT;
         snake.move_forward();
-        assert_eq!(snake.head.x, 1);
-        assert_eq!(snake.head.y, 1);
+        assert_eq!(snake.head.0.x, 1);
+        assert_eq!(snake.head.0.y, 1);
     }
 }

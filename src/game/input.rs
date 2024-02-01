@@ -1,4 +1,4 @@
-use crate::snake::{Direction, Snake};
+use crate::snake::{Direction, Snake_old};
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyEventState};
 
 use std::time::Duration;
@@ -15,7 +15,7 @@ impl Input for RealInput {
     }
 }
 
-pub fn handle_input<T: Input>(snake: &mut Snake, input: &T) -> Option<Direction> {
+pub fn handle_input<T: Input>(snake: &mut Snake_old, input: &T) -> Option<Direction> {
     if crossterm::event::poll(Duration::from_millis(100)).expect("Failed to poll for input") {
         if let crossterm::event::Event::Key(KeyEvent {
             code,
@@ -104,11 +104,11 @@ mod tests {
     #[test]
     fn test_input() {
 
-        let snake = &mut Snake::new(Element::new(1, 1), Direction::RIGHT);
+        let snake = &mut Snake_old::new(Element::new(1, 1), Direction::RIGHT);
         let mut mock_input = MockInput {event: crossterm::event::Event::Key(KeyEvent::new_with_kind(KeyCode::Right, KeyModifiers::empty(), KeyEventKind::Press))};
         println!("{:?}", snake.head);
-        assert_eq!(snake.head.x, 3);
-        assert_eq!(snake.head.y, 1);
+        assert_eq!(snake.head.0.x, 3);
+        assert_eq!(snake.head.0.y, 1);
 
         mock_input.set_custom_keycode(KeyCode::Down);
         assert_eq!(handle_input(snake, &mock_input), Some(Direction::DOWN));
