@@ -12,15 +12,11 @@ pub enum Direction {
     RIGHT,
 }
 
-#[derive(Debug, Component)]
+#[derive(Debug)]
 pub struct Snake_old {
     pub head: Head,
     pub body: VecDeque<Element>,
     pub direction: Direction,
-}
-
-pub fn add_snake(mut commands: Commands) {
-    commands.spawn((Snake, Head(Element {x: 3, y: 3})));   
 }
 
 pub struct SnakePlugin;
@@ -28,17 +24,40 @@ pub struct SnakePlugin;
 impl Plugin for SnakePlugin {
     fn build(&self, app: &mut App) {
         app
-        .insert_resource(SnakeTimer(Timer::from_seconds(2.0, TimerMode::Repeating)))
+        .insert_resource(SnakeTimer(Timer::from_seconds(1.0, TimerMode::Repeating)))
         .add_systems(Startup, add_snake)
-        .add_systems(Update, print_snake_debug);
+        .add_systems(Update, move_snake );
     }
 }
 
-#[derive(Debug, Component)]
-pub struct Snake;
+pub fn add_snake(mut commands: Commands) {
+    commands.spawn(Snake {
+        ..Default::default()
+    });   
+}
+
+impl Default for Snake {
+    fn default() -> Self {
+        Self {
+            head: Head(Element::new(3, 3)),
+            body: Body(VecDeque::new()),
+            direction: Direction::RIGHT,
+        }
+    }
+}
+
+#[derive(Debug, Bundle)]
+pub struct Snake {
+    head: Head,
+    body: Body,
+    direction: Direction,
+}
 
 #[derive(Component, Debug, Copy, Clone, PartialEq)]
 pub struct Head (pub Element);
+
+#[derive(Component, Debug, Clone, PartialEq)]
+struct Body (pub VecDeque<Element>);
 
 #[derive(Debug, Copy, Clone, PartialEq, Component)]
 pub struct Element {
@@ -55,9 +74,10 @@ impl Element {
 #[derive(Resource)]
 struct SnakeTimer(Timer);
 
-fn print_snake_debug(time: Res<Time>, mut timer: ResMut<SnakeTimer>, query: Query<&Head, With<Snake>>) {
+fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<&mut Head>) {
     if timer.0.tick(time.delta()).just_finished() {
-        for head in &query {
+        for mut head in &mut query {
+            head.0.x += 1;
             println!("head: {:?}", head);
         }
     }
