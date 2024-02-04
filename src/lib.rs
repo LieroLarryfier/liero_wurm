@@ -1,5 +1,5 @@
 use crate::game::game_loop::RealTime;
-use crate::game::output::draw;
+use crate::game::output::{draw, draw_snake, setup_camera};
 use crate::snake::{Direction, Element, SnakePlugin, Snake_old};
 use game::game_loop;
 use game::Level;
@@ -46,6 +46,18 @@ pub fn run(snake: &mut Snake_old, level: &mut Level) {
 
     println!("{:?}", snake);
     App::new()
-        .add_plugins((DefaultPlugins, SnakePlugin))
+        .add_plugins((DefaultPlugins
+            .set(ImagePlugin::default_nearest())
+            .set(WindowPlugin {
+                primary_window: Some(Window { 
+                        title: "Snake Wurm".into(),
+                        resolution: (400.0, 400.0).into(),
+                        ..default()
+                    }),
+                    ..default()
+            })
+            , SnakePlugin))
+        .add_systems(Startup, setup_camera)
+        .add_systems(Update, draw_snake)
         .run();
 }
