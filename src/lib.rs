@@ -1,7 +1,7 @@
 use crate::game::game_loop::RealTime;
 use crate::game::input::handle_input;
-use crate::game::output::{draw, draw_snake, setup_camera};
-use crate::snake::{Direction, Element, SnakePlugin, Snake_old};
+use crate::game::output::{draw, draw_collision, draw_level, draw_snake, setup_camera};
+use crate::snake::{CollisionEvent, Direction, Element, SnakePlugin, Snake_old};
 use game::game_loop;
 use game::Level;
 use std::error::Error;
@@ -51,7 +51,9 @@ pub fn run(snake: &mut Snake_old, level: &mut Level) {
                     ..default()
             })
             , SnakePlugin))
+        .add_event::<CollisionEvent>()
+        .insert_resource(Level::default())
         .add_systems(Startup, (setup_camera))
-        .add_systems(Update, (draw_snake, handle_input))
+        .add_systems(Update, (draw_level, draw_snake, handle_input, draw_collision))
         .run();
 }

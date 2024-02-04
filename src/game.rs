@@ -1,3 +1,5 @@
+use bevy::ecs::{component::Component, system::{Commands, Resource}};
+
 use crate::snake::Element;
 
 pub mod game_loop;
@@ -20,28 +22,32 @@ impl Game {
     }
 }
 
+#[derive(Resource)]
 pub struct Level {
     pub walls: Vec<Element>,
     pub food: Element,
 }
 
-impl Level {
-    pub fn new(width: u16, height: u16) -> Level {
+impl Default for Level {
+    fn default() -> Self {     
+        let width = 20;
+        let height = 20;
         let mut walls = vec![];
-        for x in 0..width {
+        for x in 0..=width {
             walls.push(Element::new(x, 0));
             walls.push(Element::new(x, height));
         }
-        for y in 0..height {
+        for y in 0..=height {
             walls.push(Element::new(0, y));
             walls.push(Element::new(width, y));
         }
-
         let food: Element = Element::new(width / 2, height / 2);
 
-        Level { walls, food }
+        Self { walls, food }
     }
+}
 
+impl Level {
     pub fn spawn_food(&mut self) -> Element {
         use rand::Rng;
         let mut rng = rand::thread_rng();
@@ -63,6 +69,6 @@ mod tests {
 
     #[test]
     fn test_new() {
-        assert_eq!(Level::new(3, 5).walls.len(), 16);
+        assert_eq!(Level::default().walls.len(), 16);
     }
 }

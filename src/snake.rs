@@ -12,8 +12,6 @@ pub enum Direction {
     Right,
 }
 
-
-
 pub struct SnakePlugin;
 
 impl Plugin for SnakePlugin {
@@ -21,7 +19,7 @@ impl Plugin for SnakePlugin {
         app
         .insert_resource(SnakeTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .add_systems(Startup, add_snake)
-        .add_systems(Update, move_snake );
+        .add_systems(Update, (check_collision_level, move_snake).chain() );
     }
 }
 
@@ -97,6 +95,25 @@ fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<&
 
             println!("head: {:?}", snake);
         }
+    }
+}
+
+#[derive(Event, Debug)]
+pub struct CollisionEvent(CollisionType);
+
+#[derive(Debug)]
+enum CollisionType {
+    Level,
+    Snake
+}
+
+fn check_collision_level(level: Res<Level>, query: Query<&Snake, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
+    let snake = query.single();
+    let head = snake.head;
+    let mut iter = level.walls.iter();
+    
+    if iter.any(|&pos| pos == head.0) {
+        collision_event.send(CollisionEvent(CollisionType::Level));
     }
 }
 

@@ -46,7 +46,6 @@ pub fn game_loop<T: TimeTrait>(
         }
         last_frame_time = Instant::now();
     }
-    output::draw_level(&level)?;
     output::draw_food(level.food)?;
     output::draw(&snake)?;
 
@@ -79,7 +78,7 @@ mod tests {
     #[test]
     fn test_game_loop_eat() {
         let snake = &mut Snake_old::new(Element::new(1, 1), Direction::Right);
-        let level = &mut Level::new(20, 20);
+        let level = &mut Level::default();
         let duration = Duration::from_millis(100);
         let time = MockTime{};
 
@@ -102,7 +101,7 @@ mod tests {
     #[test]
     fn test_game_loop_turn() {
         let snake = &mut Snake_old::new(Element::new(1, 1), Direction::Right);
-        let level = &mut Level::new(20, 20);
+        let level = &mut Level::default();
         let duration = Duration::from_millis(100);
         let time = MockTime{};
 

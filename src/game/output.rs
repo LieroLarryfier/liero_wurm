@@ -1,4 +1,4 @@
-use crate::snake::{Element, Head, Player1Marker, Snake, Snake_old};
+use crate::snake::{CollisionEvent, Element, Head, Player1Marker, Snake, Snake_old};
 use bevy::{prelude::*, render::camera::ScalingMode};
 use crossterm::{
     cursor,
@@ -32,39 +32,26 @@ pub fn draw_snake(mut query: Query<(&Snake, &mut Transform), With<Player1Marker>
     }
 }
 
-pub fn draw(snake: &Snake_old) -> io::Result<()> {
-    let mut stdout = io::stdout();
-
-    //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
-    terminal::enable_raw_mode()?;
-    stdout.execute(cursor::Hide)?;
-
-    // Draw snake
-    for pos in &snake.body {
-        stdout
-            .queue(cursor::MoveTo(pos.x, pos.y))?
-            .queue(style::PrintStyledContent("■".magenta()))?;
-    }
-
-    stdout.flush()?;
-    Ok(())
-}
-
-pub fn draw_level(level: &Level) -> io::Result<()> {
-    let mut stdout = io::stdout();
-
-    stdout.execute(terminal::Clear(terminal::ClearType::All))?;
-    stdout.execute(cursor::Hide)?;
-
+pub fn draw_level(mut commands: Commands, level: Res<Level>) {   
     // Draw level
     for pos in &level.walls {
-        stdout
-            .queue(cursor::MoveTo(pos.x, pos.y))?
-            .queue(style::PrintStyledContent("■".green()))?;
+        commands.spawn(SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(0.0, 0.5, 0.0),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+        
+        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+        ..default()
+        });
     }
+}
 
-    stdout.flush()?;
-    Ok(())
+pub fn draw_collision(mut events: EventReader<CollisionEvent>) {
+    for collision_event in events.read() {
+        println!("collision happened: {:?}", collision_event);
+    }
 }
 
 pub fn draw_food(food: Element) -> io::Result<()> {
@@ -78,6 +65,24 @@ pub fn draw_food(food: Element) -> io::Result<()> {
     stdout
         .queue(cursor::MoveTo(food.x, food.y))?
         .queue(style::PrintStyledContent("■".yellow()))?;
+
+    stdout.flush()?;
+    Ok(())
+}
+
+pub fn draw(snake: &Snake_old) -> io::Result<()> {
+    let mut stdout = io::stdout();
+
+    //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
+    terminal::enable_raw_mode()?;
+    stdout.execute(cursor::Hide)?;
+
+    // Draw snake
+    for pos in &snake.body {
+        stdout
+            .queue(cursor::MoveTo(pos.x, pos.y))?
+            .queue(style::PrintStyledContent("■".magenta()))?;
+    }
 
     stdout.flush()?;
     Ok(())

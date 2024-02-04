@@ -1,9 +1,7 @@
-use crate::snake::{Direction, Player1Marker, Snake, Snake_old};
+use crate::snake::{Direction, Player1Marker, Snake};
 use bevy::ecs::{query::With, system::{Query, Res}};
 use bevy::prelude::*;
-use crossterm::event::{Event, KeyEvent, KeyEventKind, KeyEventState};
-
-use std::time::Duration;
+use crossterm::event::Event;
 
 pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Snake, With<Player1Marker>>) {
     let mut snake = query.single_mut();
