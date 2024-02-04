@@ -35,8 +35,6 @@ pub fn game_loop<T: TimeTrait>(
 
     let mut last_frame_time = time.get_time();
 
-    input::handle_input(snake, &input);
-
     let elapsed_time = time.get_elapsed_time(last_frame_time);
     if elapsed_time >= duration {
 
@@ -80,7 +78,7 @@ mod tests {
 
     #[test]
     fn test_game_loop_eat() {
-        let snake = &mut Snake_old::new(Element::new(1, 1), Direction::RIGHT);
+        let snake = &mut Snake_old::new(Element::new(1, 1), Direction::Right);
         let level = &mut Level::new(20, 20);
         let duration = Duration::from_millis(100);
         let time = MockTime{};
@@ -103,7 +101,7 @@ mod tests {
 
     #[test]
     fn test_game_loop_turn() {
-        let snake = &mut Snake_old::new(Element::new(1, 1), Direction::RIGHT);
+        let snake = &mut Snake_old::new(Element::new(1, 1), Direction::Right);
         let level = &mut Level::new(20, 20);
         let duration = Duration::from_millis(100);
         let time = MockTime{};
@@ -122,14 +120,14 @@ mod tests {
         assert_eq!(snake.head.0.x, 5);
         assert_eq!(snake.head.0.y, 1);
 
-        snake.direction = Direction::DOWN;
+        snake.direction = Direction::Down;
 
         game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.0.x, 5);
         assert_eq!(snake.head.0.y, 2);
 
-        snake.direction = Direction::LEFT;
+        snake.direction = Direction::Left;
 
         game_loop(snake, level, duration, &time);
 

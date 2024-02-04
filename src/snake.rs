@@ -6,34 +6,41 @@ use crate::game::Level;
 
 #[derive(Debug, Clone, PartialEq, Component)]
 pub enum Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
+    Up,
+    Down,
+    Left,
+    Right,
 }
 
-#[derive(Debug)]
-pub struct Snake_old {
-    pub head: Head,
-    pub body: VecDeque<Element>,
-    pub direction: Direction,
-}
+
 
 pub struct SnakePlugin;
 
 impl Plugin for SnakePlugin {
     fn build(&self, app: &mut App) {
         app
-        .insert_resource(SnakeTimer(Timer::from_seconds(1.0, TimerMode::Repeating)))
+        .insert_resource(SnakeTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .add_systems(Startup, add_snake)
         .add_systems(Update, move_snake );
     }
 }
 
 pub fn add_snake(mut commands: Commands) {
-    commands.spawn(Snake {
-        ..Default::default()
-    });   
+    commands.spawn((
+        Player1Marker,
+        Snake {
+            ..Default::default()
+        },
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(0.5, 0.0, 0.5),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+            transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 0.0)),
+            ..default()
+        }
+    ));   
 }
 
 impl Default for Snake {
@@ -41,16 +48,19 @@ impl Default for Snake {
         Self {
             head: Head(Element::new(3, 3)),
             body: Body(VecDeque::new()),
-            direction: Direction::RIGHT,
+            direction: Direction::Right,
         }
     }
 }
 
-#[derive(Debug, Bundle)]
+#[derive(Component, Debug)]
+pub struct Player1Marker;
+
+#[derive(Debug, Component)]
 pub struct Snake {
-    head: Head,
+    pub head: Head,
     body: Body,
-    direction: Direction,
+    pub direction: Direction,
 }
 
 #[derive(Component, Debug, Copy, Clone, PartialEq)]
@@ -74,13 +84,27 @@ impl Element {
 #[derive(Resource)]
 struct SnakeTimer(Timer);
 
-fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<&mut Head>) {
+fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<&mut Snake, With<Player1Marker>>) {
     if timer.0.tick(time.delta()).just_finished() {
-        for mut head in &mut query {
-            head.0.x += 1;
-            println!("head: {:?}", head);
+        for mut snake in &mut query {
+
+            match snake.direction {
+                Direction::Up => snake.head.0.y += 1,
+                Direction::Down => snake.head.0.y -= 1,
+                Direction::Left => snake.head.0.x -= 1,
+                Direction::Right => snake.head.0.x += 1,
+            };
+
+            println!("head: {:?}", snake);
         }
     }
+}
+
+#[derive(Debug)]
+pub struct Snake_old {
+    pub head: Head,
+    pub body: VecDeque<Element>,
+    pub direction: Direction,
 }
 
 impl Snake_old {
@@ -105,10 +129,10 @@ impl Snake_old {
         let _old_head = self.head.clone();
 
         let new_head = match self.direction {
-            Direction::UP => Head(Element::new(self.head.0.x, self.head.0.y - 1)),
-            Direction::DOWN => Head(Element::new(self.head.0.x, self.head.0.y + 1)),
-            Direction::LEFT => Head(Element::new(self.head.0.x.checked_sub(1).expect("ouch"), self.head.0.y)),
-            Direction::RIGHT => Head(Element::new(self.head.0.x + 1, self.head.0.y)),
+            Direction::Up => Head(Element::new(self.head.0.x, self.head.0.y - 1)),
+            Direction::Down => Head(Element::new(self.head.0.x, self.head.0.y + 1)),
+            Direction::Left => Head(Element::new(self.head.0.x.checked_sub(1).expect("ouch"), self.head.0.y)),
+            Direction::Right => Head(Element::new(self.head.0.x + 1, self.head.0.y)),
         };
 
         self.head = new_head;
@@ -170,12 +194,12 @@ mod tests {
 
     #[test]
     fn test_new() {
-        assert_eq!(Snake_old::new(Element::new(3, 3), Direction::UP).body.len(), 3);
+        assert_eq!(Snake_old::new(Element::new(3, 3), Direction::Up).body.len(), 3);
     }
 
     #[test]
     fn test_eat() {
-        let mut snake = Snake_old::new(Element::new(3, 3), Direction::UP);
+        let mut snake = Snake_old::new(Element::new(3, 3), Direction::Up);
         assert_eq!(snake.body.len(), 3);
         snake.eat();
         assert_eq!(snake.body.len(), 4);
@@ -183,7 +207,7 @@ mod tests {
 
     #[test]
     fn test_move() {
-        let mut snake = Snake_old::new(Element::new(3, 3), Direction::UP);
+        let mut snake = Snake_old::new(Element::new(3, 3), Direction::Up);
         assert_eq!(snake.body.len(), 3);
         snake.move_forward();
         assert_eq!(snake.body.len(), 3);
@@ -191,7 +215,7 @@ mod tests {
 
     #[test]
     fn test_direction_up() {
-        let snake = Snake_old::new(Element::new(10, 10), Direction::UP);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::Up);
 
         assert_eq!(snake.body.front().unwrap().x, 10);
         assert_eq!(snake.body.front().unwrap().y, 8);
@@ -199,7 +223,7 @@ mod tests {
 
     #[test]
     fn test_direction_down() {
-        let snake = Snake_old::new(Element::new(10, 10), Direction::DOWN);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::Down);
 
         assert_eq!(snake.body.front().unwrap().x, 10);
         assert_eq!(snake.body.front().unwrap().y, 12);
@@ -207,7 +231,7 @@ mod tests {
 
     #[test]
     fn test_direction_left() {
-        let snake = Snake_old::new(Element::new(10, 10), Direction::LEFT);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::Left);
 
         assert_eq!(snake.body.front().unwrap().x, 8);
         assert_eq!(snake.body.front().unwrap().y, 10);
@@ -215,7 +239,7 @@ mod tests {
 
     #[test]
     fn test_direction_right() {
-        let snake = Snake_old::new(Element::new(10, 10), Direction::RIGHT);
+        let snake = Snake_old::new(Element::new(10, 10), Direction::Right);
 
         assert_eq!(snake.body.front().unwrap().x, 12);
         assert_eq!(snake.body.front().unwrap().y, 10);
@@ -224,13 +248,13 @@ mod tests {
     #[test]
     //Test a sharp turn.
     fn test_turn() {
-        let mut snake = Snake_old::new(Element::new(0, 0), Direction::RIGHT);
+        let mut snake = Snake_old::new(Element::new(0, 0), Direction::Right);
 
         assert_eq!(snake.head.0.x, 2);
         assert_eq!(snake.head.0.y, 0);
-        snake.direction = Direction::DOWN;
+        snake.direction = Direction::Down;
         snake.move_forward();
-        snake.direction = Direction::LEFT;
+        snake.direction = Direction::Left;
         snake.move_forward();
         assert_eq!(snake.head.0.x, 1);
         assert_eq!(snake.head.0.y, 1);

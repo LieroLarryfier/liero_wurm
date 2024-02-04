@@ -1,4 +1,5 @@
 use crate::game::game_loop::RealTime;
+use crate::game::input::handle_input;
 use crate::game::output::{draw, draw_snake, setup_camera};
 use crate::snake::{Direction, Element, SnakePlugin, Snake_old};
 use game::game_loop;
@@ -18,13 +19,9 @@ pub fn setup_old() -> Snake_old {
 
     let start = Element::new(x, y);
 
-    let snake: Snake_old = Snake_old::new(start, Direction::RIGHT);
+    let snake: Snake_old = Snake_old::new(start, Direction::Right);
 
     snake
-}
-
-fn hello_world() {
-    println!("hello world!");
 }
 
 pub fn run_old(snake: &mut Snake_old, level: &mut Level) -> Result<(), Box<dyn Error>> {
@@ -41,9 +38,6 @@ pub fn run_old(snake: &mut Snake_old, level: &mut Level) -> Result<(), Box<dyn E
 }
 
 pub fn run(snake: &mut Snake_old, level: &mut Level) {
-    let duration = Duration::from_millis(100);
-    let time = RealTime {};
-
     println!("{:?}", snake);
     App::new()
         .add_plugins((DefaultPlugins
@@ -57,7 +51,7 @@ pub fn run(snake: &mut Snake_old, level: &mut Level) {
                     ..default()
             })
             , SnakePlugin))
-        .add_systems(Startup, setup_camera)
-        .add_systems(Update, draw_snake)
+        .add_systems(Startup, (setup_camera))
+        .add_systems(Update, (draw_snake, handle_input))
         .run();
 }

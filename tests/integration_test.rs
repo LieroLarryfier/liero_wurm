@@ -2,5 +2,5 @@ use liero_wurm::{self, snake::Direction};
 
 #[test]
 fn test_setup() {
-    assert_eq!(Direction::RIGHT, liero_wurm::setup_old().direction);
+    assert_eq!(Direction::Right, liero_wurm::setup_old().direction);
 }

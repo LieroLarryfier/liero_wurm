@@ -1,78 +1,47 @@
-use crate::snake::{Direction, Snake_old};
-use crossterm::event::{Event, KeyCode, KeyEvent, KeyEventKind, KeyEventState};
+use crate::snake::{Direction, Player1Marker, Snake, Snake_old};
+use bevy::ecs::{query::With, system::{Query, Res}};
+use bevy::prelude::*;
+use crossterm::event::{Event, KeyEvent, KeyEventKind, KeyEventState};
 
 use std::time::Duration;
 
-pub trait Input {
+pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Snake, With<Player1Marker>>) {
+    let mut snake = query.single_mut();
+    
+    if input.just_pressed( KeyCode::Up) {
+        if snake.direction != Direction::Down {
+            snake.direction = Direction::Up;
+        }   
+    }
+    if input.just_pressed(KeyCode::Down) {
+        if snake.direction != Direction::Up {
+            snake.direction = Direction::Down;
+        }
+    }
+    if input.just_pressed(KeyCode::Left) {
+        if snake.direction != Direction::Right {
+            snake.direction = Direction::Left;
+        }
+    }
+    if input.just_pressed(KeyCode::Right) {
+        if snake.direction != Direction::Left {
+            snake.direction = Direction::Right;
+            
+        } 
+    }
+}
+
+
+
+pub trait Input_old {
     fn read_input(&self) -> Event;
 }
 
 pub struct RealInput;
 
-impl Input for RealInput {
+impl Input_old for RealInput {
     fn read_input(&self) -> Event {
         crossterm::event::read().expect("Failed to read key event")
-    }
-}
-
-pub fn handle_input<T: Input>(snake: &mut Snake_old, input: &T) -> Option<Direction> {
-    if crossterm::event::poll(Duration::from_millis(100)).expect("Failed to poll for input") {
-        if let crossterm::event::Event::Key(KeyEvent {
-            code,
-            modifiers,
-            state,
-            kind,
-        }) = input.read_input()
-        {
-            if kind == KeyEventKind::Press {
-                match code {
-                    KeyCode::Esc => {
-                        std::process::exit(0);
-                    }
-                    KeyCode::Up => {
-                        if snake.direction != Direction::DOWN {
-                            snake.direction = Direction::UP;
-                            Some(Direction::UP)
-                        } else {
-                            None
-                        }
-                    }
-                    KeyCode::Down => {
-                        if snake.direction != Direction::UP {
-                            snake.direction = Direction::DOWN;
-                            Some(Direction::DOWN)
-                        } else {
-                            None
-                        }
-                    }
-                    KeyCode::Left => {
-                        if snake.direction != Direction::RIGHT {
-                            snake.direction = Direction::LEFT;
-                            Some(Direction::LEFT)
-                        } else {
-                            None
-                        }
-                    }
-                    KeyCode::Right => {
-                        if snake.direction != Direction::LEFT {
-                            snake.direction = Direction::RIGHT;
-                            Some(Direction::RIGHT)
-                        } else {
-                            None
-                        }
-                    }
-                    _ => {
-                        None
-                    }
-                }
-            } else {
-                None
-            }
-        } else {
-            None
-        }
-    } else {
-        None
     }
 }
 
@@ -88,38 +57,14 @@ mod tests {
         pub event: Event,
     }
 
-    impl Input for MockInput {
+    impl Input_old for MockInput {
         fn read_input(&self) -> Event {
             self.event.clone()
         }
     }
 
-    impl MockInput {
-        fn set_custom_keycode(&mut self, custom_keycode: KeyCode) -> () {
-            let custom_input = KeyEvent::new(custom_keycode, KeyModifiers::empty());
-            self.event = crossterm::event::Event::Key(custom_input);
-        }
-    }
-
     #[test]
     fn test_input() {
-
-        let snake = &mut Snake_old::new(Element::new(1, 1), Direction::RIGHT);
-        let mut mock_input = MockInput {event: crossterm::event::Event::Key(KeyEvent::new_with_kind(KeyCode::Right, KeyModifiers::empty(), KeyEventKind::Press))};
-        println!("{:?}", snake.head);
-        assert_eq!(snake.head.0.x, 3);
-        assert_eq!(snake.head.0.y, 1);
-
-        mock_input.set_custom_keycode(KeyCode::Down);
-        assert_eq!(handle_input(snake, &mock_input), Some(Direction::DOWN));
-        assert_eq!(snake.direction, Direction::DOWN);
-        mock_input.set_custom_keycode(KeyCode::Left);
-        assert_eq!(handle_input(snake, &mock_input), Some(Direction::LEFT));
-        assert_eq!(snake.direction, Direction::LEFT);
-
-        mock_input.set_custom_keycode(KeyCode::Down);
-        assert_eq!(handle_input(snake, &mock_input), Some(Direction::DOWN));
-        assert_eq!(snake.direction, Direction::DOWN);
 
     }
 }
