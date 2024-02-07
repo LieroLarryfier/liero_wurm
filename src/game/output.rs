@@ -7,7 +7,7 @@ use crossterm::{
 };
 use std::io::{self, Write};
 
-use super::Level;
+use super::{Food, Level};
 
 #[derive(Component)]
 pub struct MainCameraMarker;
@@ -54,20 +54,19 @@ pub fn draw_collision(mut events: EventReader<CollisionEvent>) {
     }
 }
 
-pub fn draw_food(food: Element) -> io::Result<()> {
-    let mut stdout = io::stdout();
-
-    //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
-    //stdout.execute(cursor::Hide)?;
-
-    // Draw food
-
-    stdout
-        .queue(cursor::MoveTo(food.x, food.y))?
-        .queue(style::PrintStyledContent("■".yellow()))?;
-
-    stdout.flush()?;
-    Ok(())
+pub fn draw_food(mut commands: Commands, query: Query<&Food>) {
+    let food = query.single();
+    let pos = &food.position;
+    commands.spawn(SpriteBundle {
+        sprite: Sprite {
+            color: Color::rgb(0.0, 0.0, 0.5),
+            custom_size: Some(Vec2::new(1.0, 1.0)),
+            ..default()
+        },
+        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+        ..default()
+    });
+    println!("draw food: {:?}", pos);
 }
 
 pub fn draw(snake: &Snake_old) -> io::Result<()> {

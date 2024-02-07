@@ -2,7 +2,7 @@ use std::{collections::VecDeque, fmt::Error};
 
 use bevy::prelude::*;
 
-use crate::game::Level;
+use crate::game::{Food, FoodEatenEvent, Level};
 
 #[derive(Debug, Clone, PartialEq, Component)]
 pub enum Direction {
@@ -19,7 +19,7 @@ impl Plugin for SnakePlugin {
         app
         .insert_resource(SnakeTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .add_systems(Startup, add_snake)
-        .add_systems(Update, (check_collision_level, move_snake).chain() );
+        .add_systems(Update, (check_collision_level, move_snake, food_found).chain() );
     }
 }
 
@@ -117,6 +117,16 @@ fn check_collision_level(level: Res<Level>, query: Query<&Snake, With<Player1Mar
     }
 }
 
+pub fn food_found(snake_query: Query<&Snake, With<Player1Marker>>, food_query: Query<&Food>, mut food_found_event: EventWriter<FoodEatenEvent>) {
+    let snake = snake_query.single();
+    let food= food_query.single();
+
+    if snake.head.0 == food.position {
+        println!("snake {:?}, food_found: {:?}", snake.head.0, food.position);
+        food_found_event.send(FoodEatenEvent);
+    }     
+}
+
 #[derive(Debug)]
 pub struct Snake_old {
     pub head: Head,
@@ -196,13 +206,7 @@ impl Snake_old {
         iter.any(|&pos| pos == head.0)
     }
 
-    pub fn food_found(&self, food: Element) -> bool {
-        if self.head.0 == food {
-            true
-        } else {
-            false
-        }
-    }
+    
 }
 
 #[cfg(test)]

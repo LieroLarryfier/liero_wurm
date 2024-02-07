@@ -25,37 +25,6 @@ impl TimeTrait for RealTime {
     }
 }
 
-pub fn game_loop<T: TimeTrait>(
-    snake: &mut Snake_old,
-    level: &mut Level,
-    duration: Duration,
-    time: &T,
-) -> Result<(), Box<dyn Error>> {
-    let input = RealInput {};
-
-    let mut last_frame_time = time.get_time();
-
-    let elapsed_time = time.get_elapsed_time(last_frame_time);
-    if elapsed_time >= duration {
-
-        snake.move_forward()?;
-
-        if snake.food_found(level.food) {
-            snake.eat()?;
-            level.food = level.spawn_food();
-        }
-        last_frame_time = Instant::now();
-    }
-    output::draw_food(level.food)?;
-    output::draw(&snake)?;
-
-    if snake.check_collision() || snake.check_collision_level(&level) {
-        panic!("ouch2")
-    }
-
-    Ok(())
-}
-
 #[cfg(test)]
 
 mod tests {
@@ -85,14 +54,14 @@ mod tests {
         assert_eq!(snake.head.0.x, 3);
         assert_eq!(snake.head.0.y, 1);
 
-        game_loop(snake, level, duration, &time);
+        //game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.0.x, 4);
         assert_eq!(snake.head.0.y, 1);
 
-        level.food = Element::new(5, 1);
+        //level.food = Element::new(5, 1);
 
-        game_loop(snake, level, duration, &time);
+        //game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.body.len(), 4);
         assert_eq!(snake.head.0.x, 5);
@@ -108,12 +77,12 @@ mod tests {
         assert_eq!(snake.head.0.x, 3);
         assert_eq!(snake.head.0.y, 1);
 
-        game_loop(snake, level, duration, &time);
+        //game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.0.x, 4);
         assert_eq!(snake.head.0.y, 1);
 
-        game_loop(snake, level, duration, &time);
+        //game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.body.len(), 3);
         assert_eq!(snake.head.0.x, 5);
@@ -121,14 +90,14 @@ mod tests {
 
         snake.direction = Direction::Down;
 
-        game_loop(snake, level, duration, &time);
+        //game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.0.x, 5);
         assert_eq!(snake.head.0.y, 2);
 
         snake.direction = Direction::Left;
 
-        game_loop(snake, level, duration, &time);
+        //game_loop(snake, level, duration, &time);
 
         assert_eq!(snake.head.0.x, 4);
         assert_eq!(snake.head.0.y, 2);
