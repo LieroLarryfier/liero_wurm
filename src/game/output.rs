@@ -1,11 +1,5 @@
-use crate::snake::{CollisionEvent, Element, Head, Player1Marker, Snake, Snake_old};
+use crate::snake::{CollisionEvent, Element, Head, Player1Marker, SnakeBundle};
 use bevy::{prelude::*, render::camera::ScalingMode};
-use crossterm::{
-    cursor,
-    style::{self, Stylize},
-    terminal, ExecutableCommand, QueueableCommand,
-};
-use std::io::{self, Write};
 
 use super::{Food, Level};
 
@@ -24,10 +18,10 @@ pub fn setup_camera(mut commands: Commands) {
     ));
 }
 
-pub fn draw_snake(mut query: Query<(&Snake, &mut Transform), With<Player1Marker>>) {
-    for (snake, mut transform) in &mut query {
-        transform.translation.x = snake.head.0.x.into();
-        transform.translation.y = snake.head.0.y.into();
+pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>) {
+    for (head, mut transform) in &mut query {
+        transform.translation.x = head.0.x.into();
+        transform.translation.y = head.0.y.into();
         //print!("found snake: {:?}, transform: {:?}", snake, transform);
     }
 }
@@ -57,32 +51,5 @@ pub fn draw_collision(mut events: EventReader<CollisionEvent>) {
 pub fn draw_food(mut commands: Commands, query: Query<&Food>) {
     let food = query.single();
     let pos = &food.position;
-    commands.spawn(SpriteBundle {
-        sprite: Sprite {
-            color: Color::rgb(0.0, 0.0, 0.5),
-            custom_size: Some(Vec2::new(1.0, 1.0)),
-            ..default()
-        },
-        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-        ..default()
-    });
     println!("draw food: {:?}", pos);
-}
-
-pub fn draw(snake: &Snake_old) -> io::Result<()> {
-    let mut stdout = io::stdout();
-
-    //stdout.execute(terminal::Clear(terminal::ClearType::All))?;
-    terminal::enable_raw_mode()?;
-    stdout.execute(cursor::Hide)?;
-
-    // Draw snake
-    for pos in &snake.body {
-        stdout
-            .queue(cursor::MoveTo(pos.x, pos.y))?
-            .queue(style::PrintStyledContent("■".magenta()))?;
-    }
-
-    stdout.flush()?;
-    Ok(())
 }

@@ -1,4 +1,5 @@
-use bevy::ecs::{component::Component, event::{Event, EventReader}, system::{Commands, Query, Resource}};
+use bevy::{ecs::{component::Component, entity::Entity, event::{Event, EventReader}, system::{Commands, Query, Resource}}, math::Vec2, render::color::Color, sprite::{Sprite, SpriteBundle}, transform::commands};
+use bevy::prelude::*;
 
 use crate::{snake::Element, LEVEL_SIZE};
 
@@ -61,17 +62,36 @@ pub fn setup_food(mut commands: Commands) {
     );
 }
 
-pub fn spawn_food(mut query: Query<&mut Food>, mut event: EventReader<FoodEatenEvent>) {
+pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<FoodEatenEvent>, mut commands: Commands) {
     use rand::Rng;
     let mut rng = rand::thread_rng();
 
-    let mut food = query.single_mut();
+    let (entity, food) = query.single_mut();
 
+    let rng_x = rng.gen_range(1..LEVEL_SIZE.into());
+    let rng_y = rng.gen_range(1..LEVEL_SIZE.into());
+    
     for ev in event.read() {
         
         println!("food eaten event: {:?}", food);
 
-        food.position = Element::new(rng.gen_range(1..LEVEL_SIZE.into()), rng.gen_range(1..LEVEL_SIZE.into()));
+        commands.spawn((
+            SpriteBundle {
+                sprite: Sprite {
+                    color: Color::rgb(0.0, 0.0, 0.5),
+                    custom_size: Some(Vec2::new(1.0, 1.0)),
+                    ..default()
+                },
+                transform: Transform::from_translation(Vec3::new(rng_x.into(), rng_y.into(), 0.0)),
+                ..default()
+            },
+            Food {
+                position: Element::new(rng_x, rng_y),
+            }
+        ));
+
+        commands.entity(entity).despawn();
+        //food.position = Element::new(rng.gen_range(1..LEVEL_SIZE.into()), rng.gen_range(1..LEVEL_SIZE.into()));
 
         println!("new food {:?}", food);
     }

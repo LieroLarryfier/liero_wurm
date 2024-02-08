@@ -1,7 +1,7 @@
 use crate::game::game_loop::RealTime;
 use crate::game::input::handle_input;
-use crate::game::output::{draw, draw_collision, draw_level, draw_snake, setup_camera};
-use crate::snake::{CollisionEvent, Direction, Element, SnakePlugin, Snake_old};
+use crate::game::output::{ draw_collision, draw_level, draw_snake, setup_camera};
+use crate::snake::{CollisionEvent, Direction, Element, SnakePlugin};
 use bevy::window::{CompositeAlphaMode, EnabledButtons, WindowMode};
 use game::output::draw_food;
 use game::{setup_food, spawn_food, FoodEatenEvent};

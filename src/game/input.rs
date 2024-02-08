@@ -1,30 +1,29 @@
-use crate::snake::{Direction, Player1Marker, Snake};
+use crate::snake::{Direction, Head, Player1Marker};
 use bevy::ecs::{query::With, system::{Query, Res}};
 use bevy::prelude::*;
 use crossterm::event::Event;
 
-pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Snake, With<Player1Marker>>) {
-    let mut snake = query.single_mut();
+pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Direction, With<Player1Marker>>) {
+    let mut direction = query.single_mut();
     
     if input.just_pressed( KeyCode::Up) {
-        if snake.direction != Direction::Down {
-            snake.direction = Direction::Up;
+        if *direction != Direction::Down {
+            *direction = Direction::Up;
         }   
     }
     if input.just_pressed(KeyCode::Down) {
-        if snake.direction != Direction::Up {
-            snake.direction = Direction::Down;
+        if *direction != Direction::Up {
+            *direction = Direction::Down;
         }
     }
     if input.just_pressed(KeyCode::Left) {
-        if snake.direction != Direction::Right {
-            snake.direction = Direction::Left;
+        if *direction != Direction::Right {
+            *direction = Direction::Left;
         }
     }
     if input.just_pressed(KeyCode::Right) {
-        if snake.direction != Direction::Left {
-            snake.direction = Direction::Right;
-            
+        if *direction != Direction::Left {
+            *direction = Direction::Right;    
         } 
     }
 }
