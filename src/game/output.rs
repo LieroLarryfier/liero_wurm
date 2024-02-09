@@ -1,4 +1,4 @@
-use crate::snake::{CollisionEvent, Element, Head, Player1Marker, SnakeBundle};
+use crate::snake::{Body, CollisionEvent, Element, Head, Player1Marker, SnakeBundle};
 use bevy::{prelude::*, render::camera::ScalingMode};
 
 use super::{Food, Level};
@@ -23,6 +23,23 @@ pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>
         transform.translation.x = head.0.x.into();
         transform.translation.y = head.0.y.into();
         //print!("found snake: {:?}, transform: {:?}", snake, transform);
+    }
+}
+
+pub fn draw_body(mut commands: Commands, body_query: Query<&Body, With<Player1Marker>>) {   
+    // Draw level
+    for body in body_query.iter() {
+        for pos in &body.0 {
+            commands.spawn(SpriteBundle {
+                sprite: Sprite {
+                    color: Color::rgb(5.0, 0.5, 0.0),
+                    custom_size: Some(Vec2::new(1.0, 1.0)),
+                    ..default()
+                },      
+            transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+            ..default()
+            });
+        }
     }
 }
 

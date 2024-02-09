@@ -98,9 +98,7 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
 }
 
 impl Level {
-    
-    
-    
+   
     pub fn spawn_food(&mut self) -> Element {
         use rand::Rng;
         let mut rng = rand::thread_rng();

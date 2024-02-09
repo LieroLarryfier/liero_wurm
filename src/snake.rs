@@ -12,6 +12,52 @@ pub enum Direction {
     Right,
 }
 
+#[derive(Component, Debug)]
+pub struct Player1Marker;
+
+#[derive(Debug, Bundle)]
+pub struct SnakeBundle {
+    pub head: Head,
+    pub body: Body,
+    pub direction: Direction,
+}
+
+impl Default for SnakeBundle {
+    fn default() -> Self {
+
+        let start_x: u16 = 3;
+        let start_y: u16 = 3;
+        let mut start_body = Body(VecDeque::new());
+        start_body.0.push_back(Element::new(start_x, start_y));
+        start_body.0.push_back(Element::new(start_x, start_y-1));
+        start_body.0.push_back(Element::new(start_x, start_y-2));
+
+        Self {
+            head: Head(Element::new(start_x, start_y)),
+            body: Body(start_body.0),
+            direction: Direction::Right,
+        }
+    }
+}
+
+#[derive(Component, Debug, Copy, Clone, PartialEq)]
+pub struct Head (pub Element);
+
+#[derive(Component, Debug, Clone, PartialEq)]
+pub struct Body (pub VecDeque<Element>);
+
+#[derive(Debug, Copy, Clone, PartialEq, Component)]
+pub struct Element {
+    pub x: u16,
+    pub y: u16,
+}
+
+impl Element {
+    pub fn new(x: u16, y: u16) -> Self {
+        Self { x, y }
+    }
+}
+
 pub struct SnakePlugin;
 
 impl Plugin for SnakePlugin {
@@ -35,64 +81,31 @@ pub fn add_snake(mut commands: Commands) {
                 custom_size: Some(Vec2::new(1.0, 1.0)),
                 ..default()
             },
-            transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 0.0)),
+            transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
             ..default()
         }
     ));   
 }
 
-impl Default for SnakeBundle {
-    fn default() -> Self {
-        Self {
-            head: Head(Element::new(3, 3)),
-            body: Body(VecDeque::new()),
-            direction: Direction::Right,
-        }
-    }
-}
 
-#[derive(Component, Debug)]
-pub struct Player1Marker;
 
-#[derive(Debug, Bundle)]
-pub struct SnakeBundle {
-    pub head: Head,
-    pub body: Body,
-    pub direction: Direction,
-}
 
-#[derive(Component, Debug, Copy, Clone, PartialEq)]
-pub struct Head (pub Element);
-
-#[derive(Component, Debug, Clone, PartialEq)]
-struct Body (pub VecDeque<Element>);
-
-#[derive(Debug, Copy, Clone, PartialEq, Component)]
-pub struct Element {
-    pub x: u16,
-    pub y: u16,
-}
-
-impl Element {
-    pub fn new(x: u16, y: u16) -> Self {
-        Self { x, y }
-    }
-}
 
 #[derive(Resource)]
 struct SnakeTimer(Timer);
 
-fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &Direction), With<Player1Marker>>) {
+fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>) {
     if timer.0.tick(time.delta()).just_finished() {
-        for (mut head, direction) in &mut query {
+        for (mut head, mut body, direction) in &mut query {
             match direction {
                 Direction::Up => head.0.y += 1,
                 Direction::Down => head.0.y -= 1,
                 Direction::Left => head.0.x -= 1,
                 Direction::Right => head.0.x += 1,
             };
-
             println!("head: {:?}", head);
+            body.0.push_front(head.0);
+            body.0.pop_back();
         }
     }
 }
