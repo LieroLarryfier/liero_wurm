@@ -1,4 +1,4 @@
-use crate::snake::{Body, CollisionEvent, Element, Head, Player1Marker, SnakeBundle};
+use crate::snake::{Body, BodyMarker, CollisionEvent, Element, Head, Player1Marker, SnakeBundle};
 use bevy::{prelude::*, render::camera::ScalingMode};
 
 use super::{Food, Level};
@@ -18,29 +18,35 @@ pub fn setup_camera(mut commands: Commands) {
     ));
 }
 
-pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>) {
+pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>, body: Query<&Body>, body_entity: Query<Entity, With<BodyMarker>>, mut commands: Commands) {
     for (head, mut transform) in &mut query {
         transform.translation.x = head.0.x.into();
         transform.translation.y = head.0.y.into();
         //print!("found snake: {:?}, transform: {:?}", snake, transform);
     }
-}
 
-pub fn draw_body(mut commands: Commands, body_query: Query<&Body, With<Player1Marker>>) {   
-    // Draw level
-    for body in body_query.iter() {
-        for pos in &body.0 {
-            commands.spawn(SpriteBundle {
-                sprite: Sprite {
-                    color: Color::rgb(5.0, 0.5, 0.0),
-                    custom_size: Some(Vec2::new(1.0, 1.0)),
-                    ..default()
-                },      
-            transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-            ..default()
-            });
-        }
+    //Despawn Body
+    for entity in body_entity.iter() {
+        commands.entity(entity).despawn();
     }
+    
+    // Draw body
+    for body1 in &body {
+        for pos in body1.0.iter() {
+        commands.spawn((
+            BodyMarker,
+            SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(0.7, 1.0, 0.0),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+        
+        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+        ..default()
+        }));
+    }
+}
 }
 
 pub fn draw_level(mut commands: Commands, level: Res<Level>) {   
@@ -48,7 +54,24 @@ pub fn draw_level(mut commands: Commands, level: Res<Level>) {
     for pos in &level.walls {
         commands.spawn(SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(0.0, 0.5, 0.0),
+                color: Color::rgb(1.0, 1.0, 1.0),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+        
+        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+        ..default()
+        });
+    }
+}
+
+pub fn draw_element(mut commands: Commands, query: Query<&Element>) {
+    
+    for pos in &query {
+        println!("draw element:");
+        commands.spawn(SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(0.5, 0.5, 0.5),
                 custom_size: Some(Vec2::new(1.0, 1.0)),
                 ..default()
             },
@@ -68,5 +91,4 @@ pub fn draw_collision(mut events: EventReader<CollisionEvent>) {
 pub fn draw_food(mut commands: Commands, query: Query<&Food>) {
     let food = query.single();
     let pos = &food.position;
-    println!("draw food: {:?}", pos);
 }

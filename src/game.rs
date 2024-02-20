@@ -55,11 +55,20 @@ pub struct Food {
 pub struct FoodEatenEvent;
 
 pub fn setup_food(mut commands: Commands) {
-    commands.spawn(
+    commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(1.0, 0.0, 0.7),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },
+            transform: Transform::from_translation(Vec3::new((LEVEL_SIZE / 2).into(), (LEVEL_SIZE / 2).into(), 0.0)),
+            ..default()
+        },
         Food {
             position: Element::new((LEVEL_SIZE / 2).into(), (LEVEL_SIZE / 2).into()),
         }
-    );
+    ));
 }
 
 pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<FoodEatenEvent>, mut commands: Commands) {
@@ -78,7 +87,7 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
         commands.spawn((
             SpriteBundle {
                 sprite: Sprite {
-                    color: Color::rgb(0.0, 0.0, 0.5),
+                    color: Color::rgb(1.0, 0.0, 0.7),
                     custom_size: Some(Vec2::new(1.0, 1.0)),
                     ..default()
                 },

@@ -15,6 +15,9 @@ pub enum Direction {
 #[derive(Component, Debug)]
 pub struct Player1Marker;
 
+#[derive(Component, Debug)]
+pub struct BodyMarker;
+
 #[derive(Debug, Bundle)]
 pub struct SnakeBundle {
     pub head: Head,
@@ -29,8 +32,8 @@ impl Default for SnakeBundle {
         let start_y: u16 = 3;
         let mut start_body = Body(VecDeque::new());
         start_body.0.push_back(Element::new(start_x, start_y));
-        start_body.0.push_back(Element::new(start_x, start_y-1));
-        start_body.0.push_back(Element::new(start_x, start_y-2));
+        start_body.0.push_back(Element::new(start_x-1, start_y));
+        start_body.0.push_back(Element::new(start_x-2, start_y));
 
         Self {
             head: Head(Element::new(start_x, start_y)),
@@ -64,12 +67,13 @@ impl Plugin for SnakePlugin {
     fn build(&self, app: &mut App) {
         app
         .insert_resource(SnakeTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
-        .add_systems(Startup, add_snake)
+        .add_systems(Startup, (add_snake).chain())
         .add_systems(Update, (check_collision_level, move_snake, food_found).chain() );
     }
 }
 
 pub fn add_snake(mut commands: Commands) {
+    println!("add_snake");
     commands.spawn((
         Player1Marker,
         SnakeBundle {
@@ -77,19 +81,33 @@ pub fn add_snake(mut commands: Commands) {
         },
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(0.5, 0.0, 0.5),
+                color: Color::rgb(0.56, 0.8, 0.0),
                 custom_size: Some(Vec2::new(1.0, 1.0)),
                 ..default()
             },
             transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
             ..default()
         }
-    ));   
+    ));
+
+    let body = SnakeBundle::default().body;
+
+    for pos in &body.0 {
+        println!("add_body");
+        commands.spawn((
+            BodyMarker,
+            SpriteBundle {
+            sprite: Sprite {
+                color: Color::rgb(0.7, 1.0, 0.0),
+                custom_size: Some(Vec2::new(1.0, 1.0)),
+                ..default()
+            },      
+        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+        ..default()
+        }));
+    }   
+
 }
-
-
-
-
 
 #[derive(Resource)]
 struct SnakeTimer(Timer);
@@ -120,22 +138,27 @@ enum CollisionType {
 }
 
 fn check_collision_level(level: Res<Level>, query: Query<&Head, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
-    let head = query.single();
-    let mut iter = level.walls.iter();
     
+    let mut iter = level.walls.iter();
+    for head in &query {
     if iter.any(|&pos| pos == head.0) {
-        collision_event.send(CollisionEvent(CollisionType::Level));
+        collision_event.
+        send(CollisionEvent(CollisionType::Level));
+    }
     }
 }
 
 pub fn food_found(snake_query: Query<&Head, With<Player1Marker>>, food_query: Query<&Food>, mut food_found_event: EventWriter<FoodEatenEvent>) {
-    let head = snake_query.single();
+    
     let food= food_query.single();
+
+    for head in &snake_query {
 
     if head.0 == food.position {
         println!("snake {:?}, food_found: {:?}", head.0, food.position);
         food_found_event.send(FoodEatenEvent);
     }     
+}
 }
 
 

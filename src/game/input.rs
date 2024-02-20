@@ -4,7 +4,7 @@ use bevy::prelude::*;
 use crossterm::event::Event;
 
 pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Direction, With<Player1Marker>>) {
-    let mut direction = query.single_mut();
+    for mut direction in &mut query {
     
     if input.just_pressed( KeyCode::Up) {
         if *direction != Direction::Down {
@@ -26,6 +26,7 @@ pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Direction,
             *direction = Direction::Right;    
         } 
     }
+}
 }
 
 
