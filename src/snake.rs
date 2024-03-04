@@ -112,7 +112,15 @@ pub fn add_snake(mut commands: Commands) {
 #[derive(Resource)]
 struct SnakeTimer(Timer);
 
-fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>) {
+fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>, mut event: EventReader<FoodEatenEvent>) {
+    //move this into body, dont reset every time
+    let mut grow: bool = false;
+    
+    if !event.is_empty() && !grow {
+        grow = true;
+        println!("grow");
+    }
+
     if timer.0.tick(time.delta()).just_finished() {
         for (mut head, mut body, direction) in &mut query {
             match direction {
@@ -123,7 +131,12 @@ fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(
             };
             println!("head: {:?}", head);
             body.0.push_front(head.0);
-            body.0.pop_back();
+            if !grow {
+                println!("body: {:?}", body.0);
+                body.0.pop_back();
+                grow = false;
+                println!("body: {:?}", body.0);
+            }
         }
     }
 }

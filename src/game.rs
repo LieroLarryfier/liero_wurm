@@ -81,6 +81,8 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
     let rng_y = rng.gen_range(1..LEVEL_SIZE.into());
     
     for ev in event.read() {
+
+        commands.entity(entity).despawn();
         
         println!("food eaten event: {:?}", food);
 
@@ -99,7 +101,7 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
             }
         ));
 
-        commands.entity(entity).despawn();
+        
         //food.position = Element::new(rng.gen_range(1..LEVEL_SIZE.into()), rng.gen_range(1..LEVEL_SIZE.into()));
 
         println!("new food {:?}", food);

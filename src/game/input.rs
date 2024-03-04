@@ -3,25 +3,25 @@ use bevy::ecs::{query::With, system::{Query, Res}};
 use bevy::prelude::*;
 use crossterm::event::Event;
 
-pub fn handle_input(input: Res<Input<KeyCode>>, mut query: Query<&mut Direction, With<Player1Marker>>) {
+pub fn handle_input(input: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Direction, With<Player1Marker>>) {
     for mut direction in &mut query {
     
-    if input.just_pressed( KeyCode::Up) {
+    if input.just_pressed( KeyCode::ArrowUp) {
         if *direction != Direction::Down {
             *direction = Direction::Up;
         }   
     }
-    if input.just_pressed(KeyCode::Down) {
+    if input.just_pressed(KeyCode::ArrowDown) {
         if *direction != Direction::Up {
             *direction = Direction::Down;
         }
     }
-    if input.just_pressed(KeyCode::Left) {
+    if input.just_pressed(KeyCode::ArrowLeft) {
         if *direction != Direction::Right {
             *direction = Direction::Left;
         }
     }
-    if input.just_pressed(KeyCode::Right) {
+    if input.just_pressed(KeyCode::ArrowRight) {
         if *direction != Direction::Left {
             *direction = Direction::Right;    
         } 
