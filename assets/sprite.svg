@@ -7,34 +7,34 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="sprite.svg"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   id="svg8"
-   version="1.1"
-   viewBox="0 0 210 297"
+   width="210mm"
    height="297mm"
-   width="210mm">
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="sprite.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
-     inkscape:window-maximized="0"
-     inkscape:window-y="155"
-     inkscape:window-x="2742"
-     inkscape:window-height="1198"
-     inkscape:window-width="1375"
-     showgrid="false"
-     inkscape:document-rotation="0"
-     inkscape:current-layer="layer1"
-     inkscape:document-units="mm"
-     inkscape:cy="104.61617"
-     inkscape:cx="78.641158"
-     inkscape:zoom="2.8284271"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.313708"
+     inkscape:cx="25.111602"
+     inkscape:cy="25.022346"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1375"
+     inkscape:window-height="1198"
+     inkscape:window-x="3519"
+     inkscape:window-y="91"
+     inkscape:window-maximized="0" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -43,75 +43,49 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     id="layer1"
+     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     inkscape:label="Layer 1">
+     id="layer1">
     <g
-       inkscape:export-ydpi="25.399996"
-       inkscape:export-xdpi="25.399996"
-       id="g863">
+       transform="scale(0.2645833)"
+       id="g863"
+       inkscape:export-xdpi="96.000015"
+       inkscape:export-ydpi="96.000015">
       <rect
-         style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.62042;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+         ry="1.875916"
+         rx="1.875916"
+         y="0.31020993"
+         x="0.31021035"
+         height="9.3795805"
+         width="9.3795805"
          id="rect833"
-         width="9.3795805"
-         height="9.3795805"
-         x="0.31021035"
-         y="0.31020993"
-         rx="1.875916"
-         ry="1.875916" />
-      <circle
-         style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-         id="path835"
-         cx="2.25"
-         cy="2.75"
-         r="0.90000004" />
-      <circle
-         r="0.90000004"
-         cy="2.75"
-         cx="7.75"
-         id="path835-7"
-         style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
-    </g>
-    <g
-       inkscape:export-ydpi="25.399996"
-       inkscape:export-xdpi="25.399996"
-       transform="rotate(180,10,5.0000004)"
-       id="g863-5">
-      <rect
-         ry="1.875916"
-         rx="1.875916"
-         y="0.31020993"
-         x="0.31021035"
-         height="9.3795805"
-         width="9.3795805"
-         id="rect833-7"
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.62042;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
       <circle
          r="0.90000004"
          cy="2.75"
          cx="2.25"
-         id="path835-2"
+         id="path835"
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
       <circle
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-         id="path835-7-9"
+         id="path835-7"
          cx="7.75"
          cy="2.75"
          r="0.90000004" />
     </g>
     <g
-       inkscape:export-ydpi="25.399996"
-       inkscape:export-xdpi="25.399996"
-       id="g863-5-6"
-       transform="rotate(-90,15.000001,-4.9999995)">
+       id="g863-5"
+       transform="matrix(-0.2645833,0,0,-0.2645833,5.2916663,2.6458332)"
+       inkscape:export-xdpi="96.000015"
+       inkscape:export-ydpi="96.000015">
       <rect
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.62042;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-         id="rect833-7-5"
+         id="rect833-7"
          width="9.3795805"
          height="9.3795805"
          x="0.31021035"
@@ -120,7 +94,7 @@
          ry="1.875916" />
       <circle
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-         id="path835-2-6"
+         id="path835-2"
          cx="2.25"
          cy="2.75"
          r="0.90000004" />
@@ -128,14 +102,14 @@
          r="0.90000004"
          cy="2.75"
          cx="7.75"
-         id="path835-7-9-0"
+         id="path835-7-9"
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
     </g>
     <g
-       inkscape:export-ydpi="25.399996"
-       inkscape:export-xdpi="25.399996"
-       transform="rotate(90,20,20)"
-       id="g863-5-6-0">
+       transform="matrix(0,-0.2645833,0.2645833,0,5.2916664,2.6458334)"
+       id="g863-5-6"
+       inkscape:export-xdpi="96.000015"
+       inkscape:export-ydpi="96.000015">
       <rect
          ry="1.875916"
          rx="1.875916"
@@ -143,32 +117,59 @@
          x="0.31021035"
          height="9.3795805"
          width="9.3795805"
-         id="rect833-7-5-1"
+         id="rect833-7-5"
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.62042;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
       <circle
          r="0.90000004"
          cy="2.75"
          cx="2.25"
-         id="path835-2-6-2"
+         id="path835-2-6"
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
       <circle
          style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
-         id="path835-7-9-0-0"
+         id="path835-7-9-0"
          cx="7.75"
          cy="2.75"
          r="0.90000004" />
+    </g>
+    <g
+       id="g863-5-6-0"
+       transform="matrix(0,0.2645833,-0.2645833,0,10.583332,-4.3834251e-8)"
+       inkscape:export-xdpi="96.000015"
+       inkscape:export-ydpi="96.000015">
+      <rect
+         style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.62042;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+         id="rect833-7-5-1"
+         width="9.3795805"
+         height="9.3795805"
+         x="0.31021035"
+         y="0.31020993"
+         rx="1.875916"
+         ry="1.875916" />
+      <circle
+         style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
+         id="path835-2-6-2"
+         cx="2.25"
+         cy="2.75"
+         r="0.90000004" />
+      <circle
+         r="0.90000004"
+         cy="2.75"
+         cx="7.75"
+         id="path835-7-9-0-0"
+         style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.7;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
     </g>
     <rect
-       inkscape:export-ydpi="25.399996"
-       inkscape:export-xdpi="25.399996"
-       transform="rotate(90)"
-       ry="1.875916"
-       rx="1.875916"
-       y="-49.689789"
-       x="0.31021035"
-       height="9.3795805"
-       width="9.3795805"
+       style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.164153;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1"
        id="rect833-7-5-1-4"
-       style="fill:#b3ff00;fill-opacity:1;stroke:#000000;stroke-width:0.62042;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1" />
+       width="2.4816804"
+       height="2.4816804"
+       x="0.08207643"
+       y="-13.147089"
+       rx="0.49633604"
+       ry="0.49633604"
+       transform="rotate(90)"
+       inkscape:export-xdpi="96.000015"
+       inkscape:export-ydpi="96.000015" />
   </g>
 </svg>

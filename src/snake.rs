@@ -74,36 +74,25 @@ impl Plugin for SnakePlugin {
 
 pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
     println!("add_snake");
-    commands.spawn((
-        Player1Marker,
-        SnakeBundle {
-            ..Default::default()
-        },
-        SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(0.56, 0.8, 0.0),
-                custom_size: Some(Vec2::new(10.0, 10.0)),
-                ..default()
-            },
-            transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
-            ..default()
-        }
-    ));
 
     let texture: Handle<Image> = asset_server.load("sprite.png");
     let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     commands.spawn((
+        Player1Marker,
+        SnakeBundle {
+            ..Default::default()
+        },
         SpriteSheetBundle {
-            texture,
+            texture: texture.clone(),
             atlas: TextureAtlas {
-                layout: texture_atlas_layout,
+                layout: texture_atlas_layout.clone(),
                 index: 0
             },
-            transform: Transform::from_translation(Vec3::new(5., 5., 0.0)),
+            transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
             ..default()
-        },
+        }
     ));
 
     let default_body = SnakeBundle::default().body;
@@ -112,15 +101,16 @@ pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut tex
         println!("add_body");
         commands.spawn((
             BodyMarker,
-            SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(0.7, 1.0, 0.0),
-                custom_size: Some(Vec2::new(10.0, 10.0)),
-                ..default()
-            },      
-        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-        ..default()
-        }));
+            SpriteSheetBundle {
+                texture: texture.clone(),
+                atlas: TextureAtlas {
+                    layout: texture_atlas_layout.clone(),
+                    index: 4
+                },      
+            transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+            ..default()
+            }
+        ));
     }   
 
 }

@@ -1,4 +1,4 @@
-use crate::snake::{Body, BodyMarker, CollisionEvent, Element, Head, Player1Marker, SnakeBundle};
+use crate::snake::{Body, BodyMarker, CollisionEvent, Element, Head, Player1Marker, Direction};
 use bevy::{prelude::*, render::camera::ScalingMode};
 
 use super::{Food, Level};
@@ -18,11 +18,18 @@ pub fn setup_camera(mut commands: Commands) {
     ));
 }
 
-pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>, body: Query<&Body>, body_entity: Query<Entity, With<BodyMarker>>, mut commands: Commands) {
-    for (head, mut transform) in &mut query {
+pub fn draw_snake(mut query: Query<(&Head, &mut Transform, &mut TextureAtlas, &Direction), With<Player1Marker>>, body: Query<&Body>, body_entity: Query<Entity, With<BodyMarker>>, mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
+    for (head, mut transform, mut atlas, direction) in &mut query {
         transform.translation.x = head.0.x.into();
         transform.translation.y = head.0.y.into();
-        //print!("found snake: {:?}, transform: {:?}", snake, transform);
+        let index;
+        match direction {
+            Direction::Up => index = 0,
+            Direction::Down => index = 1,
+            Direction::Left => index = 2,
+            Direction::Right => index = 3,
+        }
+        atlas.index = index;
     }
 
     //Despawn Body
@@ -31,17 +38,20 @@ pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>
     }
     
     // Draw body
+    let texture: Handle<Image> = asset_server.load("sprite.png");
+    let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
+    let texture_atlas_layout = texture_atlas_layouts.add(layout);
+
     for body1 in &body {
         for pos in body1.0.iter() {
         commands.spawn((
             BodyMarker,
-            SpriteBundle {
-            sprite: Sprite {
-                color: Color::rgb(0.7, 1.0, 0.0),
-                custom_size: Some(Vec2::new(10.0, 10.0)),
-                ..default()
-            },
-        
+            SpriteSheetBundle {
+                texture: texture.clone(),
+                atlas: TextureAtlas {
+                    layout: texture_atlas_layout.clone(),
+                    index: 4
+                }, 
         transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
         ..default()
         }));
