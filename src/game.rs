@@ -33,11 +33,11 @@ impl Default for Level {
         let width = LEVEL_SIZE;
         let height = LEVEL_SIZE;
         let mut walls = vec![];
-        for x in 0..=width {
+        for x in (0..=width).step_by(10) {
             walls.push(Element::new(x, 0));
             walls.push(Element::new(x, height));
         }
-        for y in 0..=height {
+        for y in (0..=height).step_by(10) {
             walls.push(Element::new(0, y));
             walls.push(Element::new(width, y));
         }
@@ -130,6 +130,7 @@ mod tests {
 
     #[test]
     fn test_new() {
-        assert_eq!(Level::default().walls.len(), 16);
+        println!("{:?}", Level::default().walls);
+        assert_eq!(Level::default().walls.len(), 84);
     }
 }

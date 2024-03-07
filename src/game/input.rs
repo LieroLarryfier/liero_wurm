@@ -1,4 +1,4 @@
-use crate::snake::{Direction, Head, Player1Marker};
+use crate::snake::{Direction, Player1Marker};
 use bevy::ecs::{query::With, system::{Query, Res}};
 use bevy::prelude::*;
 use crossterm::event::Event;
@@ -31,13 +31,13 @@ pub fn handle_input(input: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Dire
 
 
 
-pub trait Input_old {
+pub trait InputOld {
     fn read_input(&self) -> Event;
 }
 
 pub struct RealInput;
 
-impl Input_old for RealInput {
+impl InputOld for RealInput {
     fn read_input(&self) -> Event {
         crossterm::event::read().expect("Failed to read key event")
     }
@@ -46,8 +46,6 @@ impl Input_old for RealInput {
 #[cfg(test)]
 
 mod tests {
-    use crate::snake::Element;
-    use crossterm::event::KeyModifiers;
 
     use super::*;
 
@@ -55,7 +53,7 @@ mod tests {
         pub event: Event,
     }
 
-    impl Input_old for MockInput {
+    impl InputOld for MockInput {
         fn read_input(&self) -> Event {
             self.event.clone()
         }

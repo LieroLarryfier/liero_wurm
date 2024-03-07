@@ -75,19 +75,17 @@ impl Plugin for SnakePlugin {
 pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
     println!("add_snake");
 
-    let texture: Handle<Image> = asset_server.load("sprite.png");
     let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
-    let texture_atlas_layout = texture_atlas_layouts.add(layout);
-
+  
     commands.spawn((
         Player1Marker,
         SnakeBundle {
             ..Default::default()
         },
         SpriteSheetBundle {
-            texture: texture.clone(),
+            texture: asset_server.load("sprite.png"),
             atlas: TextureAtlas {
-                layout: texture_atlas_layout.clone(),
+                layout: texture_atlas_layouts.add(layout.clone()),
                 index: 0
             },
             transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
@@ -102,9 +100,9 @@ pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut tex
         commands.spawn((
             BodyMarker,
             SpriteSheetBundle {
-                texture: texture.clone(),
+                texture: asset_server.load("sprite.png"),
                 atlas: TextureAtlas {
-                    layout: texture_atlas_layout.clone(),
+                    layout: texture_atlas_layouts.add(layout.clone()),
                     index: 4
                 },      
             transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
@@ -118,7 +116,7 @@ pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut tex
 #[derive(Resource)]
 struct SnakeTimer(Timer);
 
-fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>, mut event: EventReader<FoodEatenEvent>) {
+fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>, mut _event: EventReader<FoodEatenEvent>) {
     //move this into body, dont reset every time
      
     if timer.0.tick(time.delta()).just_finished() {
@@ -136,6 +134,7 @@ fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(
                 body.1 -= 1;
             }
         }
+    println!("{:?}", query);
     }
 }
 
@@ -150,9 +149,9 @@ enum CollisionType {
 
 fn check_collision_level(level: Res<Level>, mut query: Query<&mut Head, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
     
-    let mut iter = level.walls.iter();
+    let mut walls = level.walls.iter();
     for head in &mut query {
-        if iter.any(|&pos| pos == head.0) {
+        if walls.any(|&pos| pos == head.0) {
             collision_event.send(CollisionEvent(CollisionType::Level));
             
         } 

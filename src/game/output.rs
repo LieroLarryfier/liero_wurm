@@ -1,7 +1,7 @@
 use crate::snake::{Body, BodyMarker, CollisionEvent, Element, Head, Player1Marker, Direction};
 use bevy::{prelude::*, render::camera::ScalingMode};
 
-use super::{Food, Level};
+use crate::game::Level;
 
 #[derive(Component)]
 pub struct MainCameraMarker;
@@ -95,9 +95,4 @@ pub fn draw_collision(mut events: EventReader<CollisionEvent>) {
     for collision_event in events.read() {
         println!("collision happened: {:?}", collision_event);
     }
-}
-
-pub fn draw_food(mut commands: Commands, query: Query<&Food>) {
-    let food = query.single();
-    let pos = &food.position;
 }

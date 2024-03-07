@@ -1,9 +1,6 @@
-use crate::game::game_loop::RealTime;
 use crate::game::input::handle_input;
 use crate::game::output::{ draw_collision, draw_level, draw_snake, setup_camera};
-use crate::snake::{CollisionEvent, Direction, Element, SnakePlugin};
-use bevy::window::{CompositeAlphaMode, EnabledButtons, WindowMode};
-use game::output::{draw_element, draw_food};
+use crate::snake::{CollisionEvent, SnakePlugin};
 use game::{setup_food, spawn_food, FoodEatenEvent};
 use game::Level;
 use bevy::prelude::*;
@@ -36,7 +33,7 @@ pub fn run() {
         .add_event::<CollisionEvent>()
         .add_event::<FoodEatenEvent>()
         .insert_resource(Level::default())
-        .add_systems(Startup, (setup_camera, setup_food))
-        .add_systems(Update, (draw_level, draw_snake, draw_food, spawn_food, handle_input, draw_collision, draw_element))
+        .add_systems(Startup, (setup_camera, setup_food, draw_level))
+        .add_systems(Update, (draw_snake, spawn_food, handle_input, draw_collision))
         .run();
 }
