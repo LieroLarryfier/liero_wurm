@@ -59,7 +59,7 @@ pub fn setup_food(mut commands: Commands) {
         SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(1.0, 0.0, 0.7),
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
             transform: Transform::from_translation(Vec3::new((LEVEL_SIZE / 2).into(), (LEVEL_SIZE / 2).into(), 0.0)),
@@ -77,8 +77,10 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
 
     let (entity, food) = query.single_mut();
 
-    let rng_x = rng.gen_range(1..LEVEL_SIZE.into());
-    let rng_y = rng.gen_range(1..LEVEL_SIZE.into());
+    let max = LEVEL_SIZE/10;
+
+    let rng_x = rng.gen_range(1..max)*10;
+    let rng_y = rng.gen_range(1..max)*10;
     
     for ev in event.read() {
 
@@ -90,7 +92,7 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
             SpriteBundle {
                 sprite: Sprite {
                     color: Color::rgb(1.0, 0.0, 0.7),
-                    custom_size: Some(Vec2::new(1.0, 1.0)),
+                    custom_size: Some(Vec2::new(10.0, 10.0)),
                     ..default()
                 },
                 transform: Transform::from_translation(Vec3::new(rng_x.into(), rng_y.into(), 0.0)),
@@ -100,9 +102,6 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
                 position: Element::new(rng_x, rng_y),
             }
         ));
-
-        
-        //food.position = Element::new(rng.gen_range(1..LEVEL_SIZE.into()), rng.gen_range(1..LEVEL_SIZE.into()));
 
         println!("new food {:?}", food);
     }

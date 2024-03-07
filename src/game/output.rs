@@ -9,8 +9,8 @@ pub struct MainCameraMarker;
 pub fn setup_camera(mut commands: Commands) {
     let mut main_2d_camera_bundle = Camera2dBundle::default();
 
-    main_2d_camera_bundle.projection.scaling_mode = ScalingMode::AutoMax { max_width: 20.0, max_height: 20.0 };
-    main_2d_camera_bundle.transform = Transform::from_xyz(10.0, 10.0, 0.0);
+    main_2d_camera_bundle.projection.scaling_mode = ScalingMode::AutoMax { max_width: 200.0, max_height: 200.0 };
+    main_2d_camera_bundle.transform = Transform::from_xyz(100.0, 100.0, 0.0);
 
     commands.spawn((
         main_2d_camera_bundle,
@@ -38,7 +38,7 @@ pub fn draw_snake(mut query: Query<(&Head, &mut Transform), With<Player1Marker>>
             SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(0.7, 1.0, 0.0),
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
         
@@ -55,7 +55,7 @@ pub fn draw_level(mut commands: Commands, level: Res<Level>) {
         commands.spawn(SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(1.0, 1.0, 1.0),
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
         
@@ -66,13 +66,12 @@ pub fn draw_level(mut commands: Commands, level: Res<Level>) {
 }
 
 pub fn draw_element(mut commands: Commands, query: Query<&Element>) {
-    
     for pos in &query {
-        println!("draw element:");
+        println!("draw element: {:?}", pos);
         commands.spawn(SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(0.5, 0.5, 0.5),
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
         

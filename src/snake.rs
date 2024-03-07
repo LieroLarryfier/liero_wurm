@@ -28,16 +28,16 @@ pub struct SnakeBundle {
 impl Default for SnakeBundle {
     fn default() -> Self {
 
-        let start_x: u16 = 3;
-        let start_y: u16 = 3;
-        let mut start_body = Body(VecDeque::new());
+        let start_x: u16 = 30;
+        let start_y: u16 = 30;
+        let mut start_body = Body(VecDeque::new(), 0);
         start_body.0.push_back(Element::new(start_x, start_y));
         start_body.0.push_back(Element::new(start_x-1, start_y));
         start_body.0.push_back(Element::new(start_x-2, start_y));
 
         Self {
             head: Head(Element::new(start_x, start_y)),
-            body: Body(start_body.0),
+            body: Body(start_body.0, 0),
             direction: Direction::Right,
         }
     }
@@ -47,7 +47,7 @@ impl Default for SnakeBundle {
 pub struct Head (pub Element);
 
 #[derive(Component, Debug, Clone, PartialEq)]
-pub struct Body (pub VecDeque<Element>);
+pub struct Body (pub VecDeque<Element>, u16);
 
 #[derive(Debug, Copy, Clone, PartialEq, Component)]
 pub struct Element {
@@ -72,7 +72,7 @@ impl Plugin for SnakePlugin {
     }
 }
 
-pub fn add_snake(mut commands: Commands) {
+pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
     println!("add_snake");
     commands.spawn((
         Player1Marker,
@@ -82,7 +82,7 @@ pub fn add_snake(mut commands: Commands) {
         SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(0.56, 0.8, 0.0),
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
             transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
@@ -90,16 +90,32 @@ pub fn add_snake(mut commands: Commands) {
         }
     ));
 
-    let body = SnakeBundle::default().body;
+    let texture: Handle<Image> = asset_server.load("sprite.png");
+    let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
+    let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
-    for pos in &body.0 {
+    commands.spawn((
+        SpriteSheetBundle {
+            texture,
+            atlas: TextureAtlas {
+                layout: texture_atlas_layout,
+                index: 0
+            },
+            transform: Transform::from_translation(Vec3::new(5., 5., 0.0)),
+            ..default()
+        },
+    ));
+
+    let default_body = SnakeBundle::default().body;
+
+    for pos in &default_body.0 {
         println!("add_body");
         commands.spawn((
             BodyMarker,
             SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(0.7, 1.0, 0.0),
-                custom_size: Some(Vec2::new(1.0, 1.0)),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },      
         transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
@@ -114,28 +130,20 @@ struct SnakeTimer(Timer);
 
 fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>, mut event: EventReader<FoodEatenEvent>) {
     //move this into body, dont reset every time
-    let mut grow: bool = false;
-    
-    if !event.is_empty() && !grow {
-        grow = true;
-        println!("grow");
-    }
-
+     
     if timer.0.tick(time.delta()).just_finished() {
         for (mut head, mut body, direction) in &mut query {
             match direction {
-                Direction::Up => head.0.y += 1,
-                Direction::Down => head.0.y -= 1,
-                Direction::Left => head.0.x -= 1,
-                Direction::Right => head.0.x += 1,
+                Direction::Up => head.0.y += 10,
+                Direction::Down => head.0.y -= 10,
+                Direction::Left => head.0.x -= 10,
+                Direction::Right => head.0.x += 10,
             };
-            println!("head: {:?}", head);
             body.0.push_front(head.0);
-            if !grow {
-                println!("body: {:?}", body.0);
-                body.0.pop_back();
-                grow = false;
-                println!("body: {:?}", body.0);
+            if body.1 == 0 {
+                body.0.pop_back();   
+            } else {
+                body.1 -= 1;
             }
         }
     }
@@ -150,26 +158,27 @@ enum CollisionType {
     Snake
 }
 
-fn check_collision_level(level: Res<Level>, query: Query<&Head, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
+fn check_collision_level(level: Res<Level>, mut query: Query<&mut Head, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
     
     let mut iter = level.walls.iter();
-    for head in &query {
-    if iter.any(|&pos| pos == head.0) {
-        collision_event.
-        send(CollisionEvent(CollisionType::Level));
-    }
+    for head in &mut query {
+        if iter.any(|&pos| pos == head.0) {
+            collision_event.send(CollisionEvent(CollisionType::Level));
+            
+        } 
     }
 }
 
-pub fn food_found(snake_query: Query<&Head, With<Player1Marker>>, food_query: Query<&Food>, mut food_found_event: EventWriter<FoodEatenEvent>) {
+pub fn food_found(mut snake_query: Query<(&Head, &mut Body), With<Player1Marker>>, food_query: Query<&Food>, mut food_found_event: EventWriter<FoodEatenEvent>) {
     
     let food= food_query.single();
 
-    for head in &snake_query {
+    for (head, mut body) in &mut snake_query {
 
     if head.0 == food.position {
         println!("snake {:?}, food_found: {:?}", head.0, food.position);
         food_found_event.send(FoodEatenEvent);
+        body.1 = 1;
     }     
 }
 }
@@ -178,7 +187,7 @@ pub fn food_found(snake_query: Query<&Head, With<Player1Marker>>, food_query: Qu
     pub fn new(start: Element, direction: Direction) -> SnakeBundle {
         let mut instance = SnakeBundle {
             head: Head(Element::new(start.x, start.y)),
-            body: Body(VecDeque::new()),
+            body: Body(VecDeque::new(), 0),
             direction,
         };
 
@@ -196,10 +205,10 @@ pub fn food_found(snake_query: Query<&Head, With<Player1Marker>>, food_query: Qu
         let _old_head = snake.head.clone();
 
         let new_head = match snake.direction {
-            Direction::Up => Head(Element::new(snake.head.0.x, snake.head.0.y - 1)),
-            Direction::Down => Head(Element::new(snake.head.0.x, snake.head.0.y + 1)),
-            Direction::Left => Head(Element::new(snake.head.0.x.checked_sub(1).expect("ouch"), snake.head.0.y)),
-            Direction::Right => Head(Element::new(snake.head.0.x + 1, snake.head.0.y)),
+            Direction::Up => Head(Element::new(snake.head.0.x, snake.head.0.y - 10)),
+            Direction::Down => Head(Element::new(snake.head.0.x, snake.head.0.y + 10)),
+            Direction::Left => Head(Element::new(snake.head.0.x.checked_sub(10).expect("ouch"), snake.head.0.y)),
+            Direction::Right => Head(Element::new(snake.head.0.x + 10, snake.head.0.y)),
         };
 
         snake.head = new_head;

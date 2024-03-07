@@ -12,7 +12,7 @@ pub mod game;
 pub mod snake;
 
 const WINDOW_SIZE: f32 = 400.0;
-const LEVEL_SIZE: u16 = 20;
+const LEVEL_SIZE: u16 = 200;
 
 
 pub fn run() {
@@ -25,7 +25,7 @@ pub fn run() {
                         title: "Snake Wurm".into(),
                         resolution: (WINDOW_SIZE, WINDOW_SIZE).into(),
                         decorations: false,
-                        resize_constraints: WindowResizeConstraints { min_width: 20.0, min_height: 20.0, max_width: 400.0, max_height: 400.0 },
+                        resize_constraints: WindowResizeConstraints { min_width: 200.0, min_height: 200.0, max_width: 4000.0, max_height: 4000.0 },
                         transparent: true,
                         ..default()
                     }),
