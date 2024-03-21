@@ -46,6 +46,14 @@ impl Default for SnakeBundle {
 #[derive(Component, Debug, Copy, Clone, PartialEq)]
 pub struct Head (pub Element);
 
+impl Default for Head {
+    fn default() -> Self {
+        Self {
+            0: Element::new(30, 30),
+        }
+    }
+}
+
 #[derive(Component, Debug, Clone, PartialEq)]
 pub struct Body (pub VecDeque<Element>, u16);
 
@@ -118,7 +126,6 @@ struct SnakeTimer(Timer);
 
 fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(&mut Head, &mut Body, &Direction), With<Player1Marker>>, mut _event: EventReader<FoodEatenEvent>) {
     //move this into body, dont reset every time
-     
     if timer.0.tick(time.delta()).just_finished() {
         for (mut head, mut body, direction) in &mut query {
             match direction {
@@ -134,7 +141,6 @@ fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(
                 body.1 -= 1;
             }
         }
-    println!("{:?}", query);
     }
 }
 
@@ -231,6 +237,8 @@ pub fn food_found(mut snake_query: Query<(&Head, &mut Body), With<Player1Marker>
 
 #[cfg(test)]
 mod tests {
+    use std::time::{Duration, Instant};
+
     use super::*;
 
     #[test]
@@ -248,10 +256,35 @@ mod tests {
 
     #[test]
     fn test_move() {
-        //let mut snake = Snake_old::new(Element::new(3, 3), Direction::Up);
-        //assert_eq!(snake.body.len(), 3);
-        //snake.move_forward();
-        //assert_eq!(snake.body.len(), 3);
+        // Setup app
+        let mut app = App::new();
+
+        let timer = Timer::from_seconds(0.2, TimerMode::Once);
+        let mut time: Time = Time::default();
+        time.advance_by(Duration::from_millis(201));
+        
+        // Add SnakeTimer resource
+        app.insert_resource(SnakeTimer(timer.clone()));
+        app.add_event::<FoodEatenEvent>();
+        app.world.insert_resource(time);
+        
+        // Add our two systems
+        app.add_systems(Update, move_snake);
+
+        // Setup test entities
+        let snake_id = app
+            .world
+            .spawn((SnakeBundle::default(), Player1Marker))
+            .id();
+        
+    
+        // Run systems
+        app.update();
+        
+        // Check resulting changes
+        assert!(app.world.get::<Head>(snake_id).is_some());
+        assert_eq!(app.world.get::<Head>(snake_id).unwrap().0.x, 40);
+            
     }
 
     #[test]

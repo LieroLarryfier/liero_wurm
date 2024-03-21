@@ -29,7 +29,6 @@ pub fn run() {
                     ..default()
             })
             , SnakePlugin))
-        
         .add_event::<CollisionEvent>()
         .add_event::<FoodEatenEvent>()
         .insert_resource(Level::default())
