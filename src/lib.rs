@@ -4,6 +4,7 @@ use crate::snake::{CollisionEvent, SnakePlugin};
 use game::{setup_food, spawn_food, FoodEatenEvent};
 use game::Level;
 use bevy::prelude::*;
+use snake::food_found;
 
 pub mod game;
 pub mod snake;
@@ -33,6 +34,6 @@ pub fn run() {
         .add_event::<FoodEatenEvent>()
         .insert_resource(Level::default())
         .add_systems(Startup, (setup_camera, setup_food, draw_level))
-        .add_systems(Update, (draw_snake, spawn_food, handle_input, draw_collision))
+        .add_systems(Update, (draw_snake, spawn_food.after(food_found), handle_input, draw_collision))
         .run();
 }
