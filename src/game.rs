@@ -86,7 +86,7 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
 
         commands.entity(entity).despawn();
         
-        println!("food eaten event: {:?}", food);
+        println!("food eaten event: {:?}", ev);
 
         commands.spawn((
             SpriteBundle {

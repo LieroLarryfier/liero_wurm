@@ -76,7 +76,7 @@ impl Plugin for SnakePlugin {
         app
         .insert_resource(SnakeTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .add_systems(Startup, (add_snake).chain())
-        .add_systems(Update, (check_collision_level, move_snake, food_found).chain() );
+        .add_systems(Update, (check_collision_level, check_collision_snake, move_snake, food_found).chain() );
     }
 }
 
@@ -158,10 +158,22 @@ fn check_collision_level(level: Res<Level>, mut query: Query<&mut Head, With<Pla
     let mut walls = level.walls.iter();
     for head in &mut query {
         if walls.any(|&pos| pos == head.0) {
-            collision_event.send(CollisionEvent(CollisionType::Level));
-            
+            collision_event.send(CollisionEvent(CollisionType::Level));         
         } 
     }
+}
+
+fn check_collision_snake(head_query: Query<&Head>, body_query: Query<&Body>, mut collision_event: EventWriter<CollisionEvent>) {
+    let head = head_query.single();
+    let body = body_query.single();
+
+    let body_elements = &mut body.0.clone();
+    
+    body_elements.pop_front();
+
+    if body_elements.iter().any(|&pos| pos == head.0) {
+        collision_event.send(CollisionEvent(CollisionType::Snake));
+    }  
 }
 
 pub fn food_found(mut snake_query: Query<(&Head, &mut Body), With<Player1Marker>>, food_query: Query<&Food>, mut food_found_event: EventWriter<FoodEatenEvent>) {
