@@ -1,0 +1,41 @@
+#Score display
+    *When you eat food get 10 Points
+    *Display points 
+        -in the the middle
+        -on the snake
+#Collision handling
+    *When You crash into a wall 
+        -display a popup
+        -pause the game
+    *collision with your body
+        -cut yourself in half
+#Restart Popup
+    *When you are game over give the opportunity to restart
+        -Same Level
+        -From the first level
+#Level Change
+    *Implement a second level
+        -middle bar
+    *Other level can be reached
+        -after some points
+        -through holes in the wall
+#Nice Graphics
+    *You can change your preferred color
+        -fixed
+        -freely
+    *You can change your Face
+        -depending on the color
+    *Nice food
+#Sound
+    *Play Sound when
+        -Eating
+        -Crashing
+        -Moving
+    *Music
+        -faster depending on level
+#Polishing
+    *Code organisation
+    *parametric sizes
+#Testing
+    *80 % code coverage
+    *Directions
