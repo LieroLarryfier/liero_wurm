@@ -76,9 +76,24 @@ impl Plugin for SnakePlugin {
         app
         .insert_resource(SnakeTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .add_systems(Startup, (add_snake).chain())
-        .add_systems(Update, (check_collision_level, check_collision_snake, move_snake, food_found).chain() );
+        .add_systems(Update, (check_collision_level, check_collision_snake, move_snake, food_found).chain().run_if(not_dead));
     }
 }
+
+pub fn not_dead(
+    dead: Query<&Dead>
+) -> bool {
+    !dead.single().0
+}
+
+pub fn dead(
+    dead: Query<&Dead>
+) -> bool {
+    dead.single().0
+}
+
+#[derive(Component)]
+pub struct Dead(pub bool);
 
 pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
     println!("add_snake");
@@ -87,6 +102,7 @@ pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut tex
   
     commands.spawn((
         Player1Marker,
+        Dead(false),
         SnakeBundle {
             ..Default::default()
         },

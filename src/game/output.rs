@@ -1,5 +1,5 @@
-use crate::snake::{Body, BodyMarker, CollisionEvent, Element, Head, Player1Marker, Direction};
-use bevy::{prelude::*, render::camera::ScalingMode};
+use crate::snake::{Body, BodyMarker, CollisionEvent, Dead, Direction, Element, Head, Player1Marker};
+use bevy::{app::AppExit, prelude::*, render::camera::ScalingMode};
 
 use crate::game::Level;
 
@@ -91,8 +91,11 @@ pub fn draw_element(mut commands: Commands, query: Query<&Element>) {
     }
 }
 
-pub fn draw_collision(mut events: EventReader<CollisionEvent>) {
+pub fn draw_collision(mut events: EventReader<CollisionEvent>, mut exit: EventWriter<AppExit>, mut dead_query: Query<&mut Dead>) {
     for collision_event in events.read() {
+        let mut dead = dead_query.single_mut();
+        dead.0 = true;
         println!("collision happened: {:?}", collision_event);
+        //exit.send(AppExit);
     }
 }
