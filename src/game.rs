@@ -3,21 +3,21 @@ use bevy::prelude::*;
 
 use crate::{snake::Element, LEVEL_SIZE};
 
-pub mod game_loop;
 pub mod input;
 pub mod output;
 
+#[derive(Resource)]
 pub struct Game {
     width: u16,
     height: u16,
     score: u32,
 }
 
-impl Game {
-    pub fn new(width: u16, height: u16) -> Game {
+impl Default for Game {
+    fn default() -> Self {
         Game {
-            width,
-            height,
+            width: 200,
+            height: 200,
             score: 0,
         }
     }
@@ -107,8 +107,51 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
     }
 }
 
+#[derive(Component)]
+pub struct Scoreboard;
+
+pub fn spawn_scoreboard(mut commands: Commands) {
+    commands.spawn((
+        // Create a TextBundle that has a Text with a
+        // single section.
+        TextBundle::from_section(
+            // Accepts a `String` or any type that converts 
+            // into a `String`, such as `&str`
+            "0",
+            TextStyle {
+                font_size: 20.0,
+                color: Color::WHITE,
+                ..default()
+            },
+        ) // Set the alignment of the Text
+        .with_text_justify(JustifyText::Center)
+        // Set the style of the TextBundle itself.
+        .with_style(Style {
+            position_type: PositionType::Absolute,
+            top: Val::Px(13.0),
+            right: Val::Px(15.0),
+            ..default()
+        }),
+        Scoreboard,
+    ));
+}
+
+pub fn increase_score(mut game: ResMut<Game>,  mut event: EventReader<FoodEatenEvent>) {
+    for ev in event.read() {
+        game.score += 10;
+        println!("{:?}", game.score);
+    }
+}
+
+pub fn update_scoreboard(mut scoreboard: Query<&mut Text, With<Scoreboard>>, game: Res<Game>) {
+    if game.is_changed() {
+        if let Ok(mut scoreboard) = scoreboard.get_single_mut() {
+            scoreboard.sections[0].value = game.score.to_string();
+        }
+    }
+}
+
 impl Level {
-   
     pub fn spawn_food(&mut self) -> Element {
         use rand::Rng;
         let mut rng = rand::thread_rng();

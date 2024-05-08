@@ -2,7 +2,7 @@ use crate::game::input::handle_input;
 use crate::game::output::{ draw_collision, draw_level, draw_snake, setup_camera};
 use crate::snake::{CollisionEvent, SnakePlugin};
 use game::input::handle_reset;
-use game::{setup_food, spawn_food, FoodEatenEvent};
+use game::{increase_score, setup_food, spawn_food, spawn_scoreboard, update_scoreboard, FoodEatenEvent, Game};
 use game::Level;
 use bevy::prelude::*;
 use snake::{dead, food_found, not_dead};
@@ -34,8 +34,9 @@ pub fn run() {
         .add_event::<CollisionEvent>()
         .add_event::<FoodEatenEvent>()
         .insert_resource(Level::default())
-        .add_systems(Startup, (setup_camera, setup_food, draw_level))
-        .add_systems(Update, (draw_snake, spawn_food.after(food_found), handle_input, draw_collision))
+        .insert_resource(Game::default())
+        .add_systems(Startup, (setup_camera, setup_food, draw_level, spawn_scoreboard))
+        .add_systems(Update, (draw_snake, spawn_food.after(food_found), handle_input, draw_collision, increase_score, update_scoreboard))
         .add_systems(Update, (handle_reset).run_if(dead))
         .run();
 }

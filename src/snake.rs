@@ -198,12 +198,12 @@ pub fn food_found(mut snake_query: Query<(&Head, &mut Body), With<Player1Marker>
 
     for (head, mut body) in &mut snake_query {
 
-    if head.0 == food.position {
-        println!("snake {:?}, food_found: {:?}", head.0, food.position);
-        food_found_event.send(FoodEatenEvent);
-        body.1 = 1;
-    }     
-}
+        if head.0 == food.position {
+            println!("snake {:?}, food_found: {:?}", head.0, food.position);
+            food_found_event.send(FoodEatenEvent);
+            body.1 = 1;
+        }     
+    }
 }
 
 

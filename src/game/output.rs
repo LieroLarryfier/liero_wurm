@@ -52,11 +52,11 @@ pub fn draw_snake(mut query: Query<(&Head, &mut Transform, &mut TextureAtlas, &D
                     layout: texture_atlas_layout.clone(),
                     index: 4
                 }, 
-        transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-        ..default()
-        }));
+            transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+            ..default()
+            }));
+        }
     }
-}
 }
 
 pub fn draw_level(mut commands: Commands, level: Res<Level>) {   
