@@ -5,7 +5,7 @@ use game::input::handle_reset;
 use game::{increase_score, setup_food, spawn_food, spawn_scoreboard, update_scoreboard, FoodEatenEvent, Game};
 use game::Level;
 use bevy::prelude::*;
-use snake::{dead, food_found, not_dead};
+use snake::{add_snake, dead, food_found, not_dead};
 
 pub mod game;
 pub mod snake;

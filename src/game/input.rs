@@ -1,4 +1,4 @@
-use crate::snake::{Dead, Direction, Player1Marker};
+use crate::snake::{Body, Dead, Direction, Head, Player1Marker};
 use bevy::ecs::{query::With, system::{Query, Res}};
 use bevy::prelude::*;
 use crossterm::event::Event;
@@ -28,10 +28,12 @@ pub fn handle_input(input: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Dire
     }
 }
 
-pub fn handle_reset(input: Res<ButtonInput<KeyCode>>, mut dead_query: Query<&mut Dead>) { 
-    let mut dead = dead_query.single_mut();
+pub fn handle_reset(input: Res<ButtonInput<KeyCode>>, mut dead_query: Query<(Entity, &mut Dead)>, mut commands: Commands) { 
+
+    let (entity, mut dead) = dead_query.single_mut();
     if input.just_pressed( KeyCode::Escape) {
-        dead.0 = false;
+        println!("dead");
+        commands.entity(entity).despawn();   
     }
 }
 
