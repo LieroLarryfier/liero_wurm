@@ -1,0 +1,9 @@
+Concrete Goals:
+Testing Directions:
+    write the function name
+    import the needed queries and entities
+
+
+Small hurdle:
+Refactor at start.
+
