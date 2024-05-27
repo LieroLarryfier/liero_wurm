@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use bevy::prelude::*;
 
-use crate::{game::{Food, FoodEatenEvent, Level}, GRID_SIZE, SPRITE_SIZE};
+use crate::{game::{Food, FoodEatenEvent, Level}, GRID_SIZE, SPRITE_SIZE, START_POSITION};
 
 #[derive(Debug, Clone, PartialEq, Component)]
 pub enum Direction {
@@ -28,8 +28,8 @@ pub struct SnakeBundle {
 impl Default for SnakeBundle {
     fn default() -> Self {
 
-        let start_x: u16 = 30;
-        let start_y: u16 = 30;
+        let start_x: u16 = START_POSITION;
+        let start_y: u16 = START_POSITION;
         let mut start_body = Body(VecDeque::new(), 0);
         start_body.0.push_back(Element::new(start_x, start_y));
         start_body.0.push_back(Element::new(start_x-1, start_y));
@@ -49,7 +49,7 @@ pub struct Head (pub Element);
 impl Default for Head {
     fn default() -> Self {
         Self {
-            0: Element::new(30, 30),
+            0: Element::new(START_POSITION, START_POSITION),
         }
     }
 }
@@ -205,38 +205,20 @@ pub fn food_found(mut snake_query: Query<(&Head, &mut Body), With<Player1Marker>
     }
 }
 
+//TODO: multigrab with big mouth
+fn _multigrab() {
+    todo!();
+}
 
-    pub fn new(start: Element, direction: Direction) -> SnakeBundle {
-        let mut instance = SnakeBundle {
-            head: Head(Element::new(start.x, start.y)),
-            body: Body(VecDeque::new(), 0),
-            direction,
-        };
+//TODO: shoot to make a hole
+fn _shoot() {
+    todo!();
+}
 
-        let length: u16 = 3;
-
-        instance.body.0.push_front(start);
-        for _ in 1..length {
-            //instance.eat();
-        }
-
-        instance
-    }
-
-    //TODO: multigrab with big mouth
-    fn _multigrab() {
-        todo!();
-    }
-
-    //TODO: shoot to make a hole
-    fn _shoot() {
-        todo!();
-    }
-
-    //TODO: split your head
-    fn _split_personalities() {
-        todo!();
-    }
+//TODO: split your head
+fn _split_personalities() {
+    todo!();
+}
 
 
 #[cfg(test)]

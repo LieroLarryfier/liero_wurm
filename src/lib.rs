@@ -16,6 +16,7 @@ const LEVEL_SIZE2: u16 = LEVEL_SIZE/2;
 const POINT_INCREASE: u16 = 10;
 const SPRITE_SIZE: f32 = 10.0;
 const GRID_SIZE: u16 = 10;
+const START_POSITION: u16 = 30;
 
 
 pub fn run() {
