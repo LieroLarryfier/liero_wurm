@@ -1,23 +1,19 @@
-use bevy::{ecs::{component::Component, entity::Entity, event::{Event, EventReader}, system::{Commands, Query, Resource}}, math::Vec2, render::color::Color, sprite::{Sprite, SpriteBundle}, transform::commands};
+use bevy::{ecs::{component::Component, entity::Entity, event::{Event, EventReader}, system::{Commands, Query, Resource}}, math::Vec2, render::color::Color, sprite::{Sprite, SpriteBundle}};
 use bevy::prelude::*;
 
-use crate::{snake::Element, LEVEL_SIZE};
+use crate::{snake::Element, LEVEL_SIZE, POINT_INCREASE};
 
 pub mod input;
 pub mod output;
 
 #[derive(Resource)]
 pub struct Game {
-    width: u16,
-    height: u16,
-    score: u32,
+    score: u16,
 }
 
 impl Default for Game {
     fn default() -> Self {
         Game {
-            width: 200,
-            height: 200,
             score: 0,
         }
     }
@@ -138,7 +134,7 @@ pub fn spawn_scoreboard(mut commands: Commands) {
 
 pub fn increase_score(mut game: ResMut<Game>,  mut event: EventReader<FoodEatenEvent>) {
     for ev in event.read() {
-        game.score += 10;
+        game.score += POINT_INCREASE;
         println!("{:?}", game.score);
     }
 }
@@ -161,7 +157,7 @@ impl Level {
         new_food
     }
 
-    fn spawn_expanding_food() {
+    fn _spawn_expanding_food() {
         //After some time the food expands and kills the snake, so be quick - different color
         todo!();
     }

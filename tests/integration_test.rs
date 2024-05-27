@@ -1,4 +1,3 @@
-use liero_wurm::{self, snake::Direction};
 
 #[test]
 fn test_setup() {

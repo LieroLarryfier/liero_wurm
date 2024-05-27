@@ -5,13 +5,17 @@ use game::input::handle_reset;
 use game::{increase_score, setup_food, spawn_food, spawn_scoreboard, update_scoreboard, FoodEatenEvent, Game};
 use game::Level;
 use bevy::prelude::*;
-use snake::{add_snake, dead, food_found, not_dead};
+use snake::{dead, food_found};
 
 pub mod game;
 pub mod snake;
 
 const WINDOW_SIZE: f32 = 400.0;
 const LEVEL_SIZE: u16 = 200;
+const LEVEL_SIZE2: u16 = LEVEL_SIZE/2;
+const POINT_INCREASE: u16 = 10;
+const SPRITE_SIZE: f32 = 10.0;
+const GRID_SIZE: u16 = 10;
 
 
 pub fn run() {

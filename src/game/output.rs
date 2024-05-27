@@ -1,5 +1,5 @@
-use crate::snake::{Body, BodyMarker, CollisionEvent, Dead, Direction, Element, Head, Player1Marker};
-use bevy::{app::AppExit, prelude::*, render::camera::ScalingMode};
+use crate::{snake::{Body, BodyMarker, CollisionEvent, Dead, Direction, Element, Head, Player1Marker}, LEVEL_SIZE, LEVEL_SIZE2, SPRITE_SIZE};
+use bevy::{prelude::*, render::camera::ScalingMode};
 
 use crate::game::Level;
 
@@ -9,8 +9,8 @@ pub struct MainCameraMarker;
 pub fn setup_camera(mut commands: Commands) {
     let mut main_2d_camera_bundle = Camera2dBundle::default();
 
-    main_2d_camera_bundle.projection.scaling_mode = ScalingMode::AutoMax { max_width: 200.0, max_height: 200.0 };
-    main_2d_camera_bundle.transform = Transform::from_xyz(100.0, 100.0, 0.0);
+    main_2d_camera_bundle.projection.scaling_mode = ScalingMode::AutoMax { max_width: LEVEL_SIZE as f32, max_height: LEVEL_SIZE as f32 };
+    main_2d_camera_bundle.transform = Transform::from_xyz(LEVEL_SIZE2 as f32, LEVEL_SIZE2 as f32, 0.0);
 
     commands.spawn((
         main_2d_camera_bundle,
@@ -81,7 +81,7 @@ pub fn draw_element(mut commands: Commands, query: Query<&Element>) {
         commands.spawn(SpriteBundle {
             sprite: Sprite {
                 color: Color::rgb(0.5, 0.5, 0.5),
-                custom_size: Some(Vec2::new(10.0, 10.0)),
+                custom_size: Some(Vec2::new(SPRITE_SIZE, SPRITE_SIZE)),
                 ..default()
             },
         
@@ -91,11 +91,10 @@ pub fn draw_element(mut commands: Commands, query: Query<&Element>) {
     }
 }
 
-pub fn draw_collision(mut events: EventReader<CollisionEvent>, mut exit: EventWriter<AppExit>, mut dead_query: Query<&mut Dead>) {
+pub fn draw_collision(mut events: EventReader<CollisionEvent>, mut dead_query: Query<&mut Dead>) {
     for collision_event in events.read() {
         let mut dead = dead_query.single_mut();
         dead.0 = true;
         println!("collision happened: {:?}", collision_event);
-        //exit.send(AppExit);
     }
 }

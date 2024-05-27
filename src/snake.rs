@@ -1,8 +1,8 @@
-use std::{collections::VecDeque, fmt::Error};
+use std::collections::VecDeque;
 
 use bevy::prelude::*;
 
-use crate::game::{Food, FoodEatenEvent, Level};
+use crate::{game::{Food, FoodEatenEvent, Level}, GRID_SIZE, SPRITE_SIZE};
 
 #[derive(Debug, Clone, PartialEq, Component)]
 pub enum Direction {
@@ -98,7 +98,7 @@ pub struct Dead(pub bool);
 pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
     println!("add_snake");
 
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
+    let layout = TextureAtlasLayout::from_grid(Vec2::new(SPRITE_SIZE, SPRITE_SIZE), 5, 1, None, None);
   
     commands.spawn((
         Player1Marker,
@@ -145,10 +145,10 @@ fn move_snake(time: Res<Time>, mut timer: ResMut<SnakeTimer>, mut query: Query<(
     if timer.0.tick(time.delta()).just_finished() {
         for (mut head, mut body, direction) in &mut query {
             match direction {
-                Direction::Up => head.0.y += 10,
-                Direction::Down => head.0.y -= 10,
-                Direction::Left => head.0.x -= 10,
-                Direction::Right => head.0.x += 10,
+                Direction::Up => head.0.y += GRID_SIZE,
+                Direction::Down => head.0.y -= GRID_SIZE,
+                Direction::Left => head.0.x -= GRID_SIZE,
+                Direction::Right => head.0.x += GRID_SIZE,
             };
             body.0.push_front(head.0);
             if body.1 == 0 {
@@ -170,7 +170,6 @@ enum CollisionType {
 }
 
 fn check_collision_level(level: Res<Level>, mut query: Query<&mut Head, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
-    
     let mut walls = level.walls.iter();
     for head in &mut query {
         if walls.any(|&pos| pos == head.0) {
@@ -224,48 +223,25 @@ pub fn food_found(mut snake_query: Query<(&Head, &mut Body), With<Player1Marker>
         instance
     }
 
-    pub fn eat(mut snake: SnakeBundle) -> Result<(), Error> {
-        let _old_head = snake.head.clone();
-
-        let new_head = match snake.direction {
-            Direction::Up => Head(Element::new(snake.head.0.x, snake.head.0.y - 10)),
-            Direction::Down => Head(Element::new(snake.head.0.x, snake.head.0.y + 10)),
-            Direction::Left => Head(Element::new(snake.head.0.x.checked_sub(10).expect("ouch"), snake.head.0.y)),
-            Direction::Right => Head(Element::new(snake.head.0.x + 10, snake.head.0.y)),
-        };
-
-        snake.head = new_head;
-        snake.body.0.push_front(new_head.0);
-
-        Ok(())
-    }
-
-    pub fn move_forward(mut snake: SnakeBundle) -> Result<(), Error> {
-        //snake.eat()?;
-        snake.body.0.pop_back();
-
-        Ok(())
-    }
-
     //TODO: multigrab with big mouth
-    fn multigrab() {
+    fn _multigrab() {
         todo!();
     }
 
     //TODO: shoot to make a hole
-    fn shoot() {
+    fn _shoot() {
         todo!();
     }
 
     //TODO: split your head
-    fn split_personalities() {
+    fn _split_personalities() {
         todo!();
     }
 
 
 #[cfg(test)]
 mod tests {
-    use std::time::{Duration, Instant};
+    use std::time::Duration;
 
     use super::*;
 
