@@ -1,5 +1,5 @@
-use crate::{snake::{Body, BodyMarker, CollisionEvent, Dead, Direction, Element, Head, Player1Marker}, LEVEL_SIZE, LEVEL_SIZE2, SPRITE_SIZE};
-use bevy::{prelude::*, render::camera::ScalingMode};
+use crate::{snake::{Body, BodyMarker, CollisionEvent, Dead, Direction, Element, Head, Player1Marker}, LEVEL_SIZE, LEVEL_SIZE2};
+use bevy::{color::palettes::css::WHITE, prelude::*, render::camera::ScalingMode};
 
 use crate::game::Level;
 
@@ -39,21 +39,22 @@ pub fn draw_snake(mut query: Query<(&Head, &mut Transform, &mut TextureAtlas, &D
     
     // Draw body
     let texture: Handle<Image> = asset_server.load("sprite.png");
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::new(10, 10), 5, 1, None, None);
     let texture_atlas_layout = texture_atlas_layouts.add(layout);
 
     for body1 in &body {
         for pos in body1.0.iter() {
         commands.spawn((
             BodyMarker,
-            SpriteSheetBundle {
+            SpriteBundle {
                 texture: texture.clone(),
-                atlas: TextureAtlas {
+                transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+                ..default()
+            },
+            TextureAtlas {
                     layout: texture_atlas_layout.clone(),
                     index: 4
-                }, 
-            transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-            ..default()
+            , 
             }));
         }
     }
@@ -64,7 +65,7 @@ pub fn draw_level(mut commands: Commands, level: Res<Level>) {
     for pos in &level.walls {
         commands.spawn(SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 1.0, 1.0),
+                color: Color::Srgba(WHITE),
                 custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
@@ -80,8 +81,8 @@ pub fn draw_element(mut commands: Commands, query: Query<&Element>) {
         println!("draw element: {:?}", pos);
         commands.spawn(SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(0.5, 0.5, 0.5),
-                custom_size: Some(Vec2::new(SPRITE_SIZE, SPRITE_SIZE)),
+                color: Color::Srgba(Srgba {red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0}),
+                custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
         

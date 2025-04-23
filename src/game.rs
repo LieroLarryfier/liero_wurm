@@ -1,4 +1,4 @@
-use bevy::{ecs::{component::Component, entity::Entity, event::{Event, EventReader}, system::{Commands, Query, Resource}}, math::Vec2, render::color::Color, sprite::{Sprite, SpriteBundle}};
+use bevy::{color::Color, ecs::{component::Component, entity::Entity, event::{Event, EventReader}, system::{Commands, Query, Resource}}, math::Vec2, sprite::{Sprite, SpriteBundle}};
 use bevy::prelude::*;
 
 use crate::{snake::Element, LEVEL_SIZE, POINT_INCREASE};
@@ -50,11 +50,13 @@ pub struct Food {
 #[derive(Event, Debug)]
 pub struct FoodEatenEvent;
 
+const MY_PINK: Srgba = Srgba {red: 1.0, green: 0.0, blue: 0.7, alpha: 1.0};
+
 pub fn setup_food(mut commands: Commands) {
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
-                color: Color::rgb(1.0, 0.0, 0.7),
+                color: Color::Srgba(MY_PINK),
                 custom_size: Some(Vec2::new(10.0, 10.0)),
                 ..default()
             },
@@ -87,7 +89,7 @@ pub fn spawn_food(mut query: Query<(Entity, &Food)>, mut event: EventReader<Food
         commands.spawn((
             SpriteBundle {
                 sprite: Sprite {
-                    color: Color::rgb(1.0, 0.0, 0.7),
+                    color: Color::Srgba(MY_PINK),
                     custom_size: Some(Vec2::new(10.0, 10.0)),
                     ..default()
                 },
@@ -133,7 +135,7 @@ pub fn spawn_scoreboard(mut commands: Commands) {
 }
 
 pub fn increase_score(mut game: ResMut<Game>,  mut event: EventReader<FoodEatenEvent>) {
-    for ev in event.read() {
+    for _ev in event.read() {
         game.score += POINT_INCREASE;
         println!("{:?}", game.score);
     }

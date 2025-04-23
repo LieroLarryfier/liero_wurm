@@ -98,7 +98,7 @@ pub struct Dead(pub bool);
 pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) {
     println!("add_snake");
 
-    let layout = TextureAtlasLayout::from_grid(Vec2::new(SPRITE_SIZE, SPRITE_SIZE), 5, 1, None, None);
+    let layout = TextureAtlasLayout::from_grid(UVec2::new(SPRITE_SIZE, SPRITE_SIZE), 5, 1, None, None);
   
     commands.spawn((
         Player1Marker,
@@ -106,15 +106,15 @@ pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut tex
         SnakeBundle {
             ..Default::default()
         },
-        SpriteSheetBundle {
+        SpriteBundle {
             texture: asset_server.load("sprite.png"),
-            atlas: TextureAtlas {
-                layout: texture_atlas_layouts.add(layout.clone()),
-                index: 0
-            },
             transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
-            ..default()
-        }
+            ..default()   
+        },
+        TextureAtlas {
+            layout: texture_atlas_layouts.add(layout.clone()),
+            index: 0
+        },
     ));
 
     let default_body = SnakeBundle::default().body;
@@ -123,15 +123,16 @@ pub fn add_snake(mut commands: Commands, asset_server: Res<AssetServer>, mut tex
         println!("add_body");
         commands.spawn((
             BodyMarker,
-            SpriteSheetBundle {
+            SpriteBundle {
                 texture: asset_server.load("sprite.png"),
-                atlas: TextureAtlas {
-                    layout: texture_atlas_layouts.add(layout.clone()),
-                    index: 4
-                },      
-            transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-            ..default()
-            }
+                transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+                ..default()
+            },
+            TextureAtlas {
+                layout: texture_atlas_layouts.add(layout.clone()),
+                index: 4,
+                ..default()
+            },
         ));
     }   
 
@@ -165,8 +166,8 @@ pub struct CollisionEvent(CollisionType);
 
 #[derive(Debug)]
 enum CollisionType {
-    Level,
-    Snake
+    Level = 0,
+    Snake = 1,
 }
 
 fn check_collision_level(level: Res<Level>, mut query: Query<&mut Head, With<Player1Marker>>, mut collision_event: EventWriter<CollisionEvent>) {
@@ -252,14 +253,14 @@ mod tests {
         // Add SnakeTimer resource
         app.insert_resource(SnakeTimer(timer.clone()));
         app.add_event::<FoodEatenEvent>();
-        app.world.insert_resource(time);
+        app.world_mut().insert_resource(time);
         
         // Add our two systems
         app.add_systems(Update, move_snake);
 
         // Setup test entities
         let snake_id = app
-            .world
+            .world_mut()
             .spawn((SnakeBundle::default(), Player1Marker))
             .id();
         
@@ -268,8 +269,8 @@ mod tests {
         app.update();
         
         // Check resulting changes
-        assert!(app.world.get::<Head>(snake_id).is_some());
-        assert_eq!(app.world.get::<Head>(snake_id).unwrap().0.x, 40);
+        assert!(app.world_mut().get::<Head>(snake_id).is_some());
+        assert_eq!(app.world_mut().get::<Head>(snake_id).unwrap().0.x, 40);
             
     }
 

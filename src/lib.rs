@@ -14,7 +14,7 @@ const WINDOW_SIZE: f32 = 400.0;
 const LEVEL_SIZE: u16 = 200;
 const LEVEL_SIZE2: u16 = LEVEL_SIZE/2;
 const POINT_INCREASE: u16 = 10;
-const SPRITE_SIZE: f32 = 10.0;
+const SPRITE_SIZE: u32 = 10;
 const GRID_SIZE: u16 = 10;
 const START_POSITION: u16 = 30;
 

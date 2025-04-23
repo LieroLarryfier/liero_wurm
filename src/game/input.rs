@@ -32,14 +32,14 @@ pub fn handle_input(input: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Dire
 
 pub fn handle_reset(input: Res<ButtonInput<KeyCode>>, mut dead_query: Query<(Entity, &Dead)>, mut game: ResMut<Game>, mut commands: Commands, asset_server: Res<AssetServer>, mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,) { 
 
-    let (entity, dead) = dead_query.single_mut();
+    let (entity, _dead) = dead_query.single_mut();
     if input.just_pressed( KeyCode::Escape) {
         println!("dead");
         commands.entity(entity).despawn();   
 
         game.score = 0;
 
-        let layout = TextureAtlasLayout::from_grid(Vec2::new(10.0, 10.0), 5, 1, None, None);
+        let layout = TextureAtlasLayout::from_grid(UVec2::new(10, 10), 5, 1, None, None);
   
         commands.spawn((
             Player1Marker,
@@ -47,15 +47,15 @@ pub fn handle_reset(input: Res<ButtonInput<KeyCode>>, mut dead_query: Query<(Ent
             SnakeBundle {
                 ..Default::default()
             },
-            SpriteSheetBundle {
+            SpriteBundle {
                 texture: asset_server.load("sprite.png"),
-                atlas: TextureAtlas {
-                    layout: texture_atlas_layouts.add(layout.clone()),
-                    index: 0
-                },
                 transform: Transform::from_translation(Vec3::new(-10.0, -10.0, 1.0)),
                 ..default()
-            }
+            },
+            TextureAtlas {
+                    layout: texture_atlas_layouts.add(layout.clone()),
+                    index: 0
+            },
         ));
 
         let default_body = SnakeBundle::default().body;
@@ -64,15 +64,15 @@ pub fn handle_reset(input: Res<ButtonInput<KeyCode>>, mut dead_query: Query<(Ent
             println!("add_body");
             commands.spawn((
                 BodyMarker,
-                SpriteSheetBundle {
+                SpriteBundle {
                     texture: asset_server.load("sprite.png"),
-                    atlas: TextureAtlas {
-                        layout: texture_atlas_layouts.add(layout.clone()),
-                        index: 4
-                    },      
-                transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
-                ..default()
-                }
+                    transform: Transform::from_translation(Vec3::new(pos.x.into(), pos.y.into(), 0.0)),
+                    ..default()
+                },
+                TextureAtlas {
+                    layout: texture_atlas_layouts.add(layout.clone()),
+                    index: 4
+                },      
             ));
         }   
     }
